@@ -1,0 +1,53 @@
+---
+alwaysApply: true
+---
+# SaaS Project Structure and Coding Guidelines
+
+## Project Overview
+This is a SaaS application with a Flask backend and React frontend.
+
+## Technology Stack
+- **Backend**: Flask (Python)
+- **Frontend**: React
+
+## Project Structure
+```
+project/
+├── backend/                    # Flask backend application
+│   ├── app.py                 # Main Flask application file
+│   
+├── frontend/                  # React frontend application
+│   ├── src/
+│   │   └── index.js          # Main frontend JavaScript file
+│   └── package.json          # Node.js package configuration
+├── README.md                 # Project documentation
+├── .gitignore               # Git ignore patterns
+└── requirements.txt       # Python dependencies
+```
+
+## Coding Guidelines
+
+### Backend Development (Flask)
+- **Location**: All backend code must be written in the `backend/` folder
+- **Main file**: `backend/app.py` - contains the Flask application logic
+- **Dependencies**: Add Python packages to `requirements.txt` (root level)
+- **Structure**: Follow Flask best practices with proper routing, error handling, and API design
+
+### Frontend Development (React)
+- **Location**: All frontend code must be written in the `frontend/` folder
+- **Main file**: `frontend/src/index.js` - contains the main React application entry point
+- **Dependencies**: Add React packages to `frontend/package.json`
+- **Structure**: Use React with modern hooks and functional components
+- **Theme**: Always use pink color
+
+### Code Organization
+- Keep backend and frontend code strictly separated in their respective folders
+- Backend API endpoints should be RESTful and well-documented
+- Frontend should communicate with backend via HTTP requests
+- Follow consistent naming conventions within each technology stack
+
+### Development Workflow
+1. Backend changes: Work in `backend/` folder
+2. Frontend changes: Work in `frontend/` folder
+3. Cross-cutting concerns: Document in README.md
+4. Environment setup: Use appropriate package managers (pip for Python, npm for JavaScript) 
