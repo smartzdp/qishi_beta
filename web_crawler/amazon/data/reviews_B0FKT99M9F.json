@@ -1,0 +1,32 @@
+[
+  {
+    "reviewerName": "Edmilson gusmão",
+    "rating": 5,
+    "title": "Easy Install",
+    "location": "the United States",
+    "date": "August 17, 2025",
+    "verifiedPurchase": false,
+    "reviewText": "Installed it in 15 minutes—no pro needed, fits standard US/Canada doors. Connects to Alexa/Google easily, making it the heart of my smart home. 36 ringtones beat the boring \"ding-dong.\" One-touch unlock inside is great for my grandma. Free 3-day cloud storage lets me check past footage anytime. Simple, useful, and worth it.",
+    "page": 1
+  },
+  {
+    "reviewerName": "Manteos",
+    "rating": 5,
+    "title": "Convenience Safety",
+    "location": "the United States",
+    "date": "August 17, 2025",
+    "verifiedPurchase": false,
+    "reviewText": "Finally, a lock that keeps up with my messy life. Auto-lock after 10 seconds? Perfect for forgetful folks like me. Unlocking options: voice (Alexa/Google), app, fingerprint, or old-school key—covers everyone. The 10,000mAh battery lasts 6-8 months, no constant recharging. Spoof-proof passwords and panic codes? Adds peace of mind. Once you use it, you can’t go back.",
+    "page": 1
+  },
+  {
+    "reviewerName": "FLÁVIO",
+    "rating": 5,
+    "title": "Backed Up",
+    "location": "the United States",
+    "date": "August 17, 2025",
+    "verifiedPurchase": false,
+    "reviewText": "30-day returns, 12-month warranty, 24/7 support—no hassle. Fixed a night glitch in minutes. Motion detection, 2-way talk. A 24/7 guard.",
+    "page": 1
+  }
+]

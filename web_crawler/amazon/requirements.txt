@@ -1,0 +1,2 @@
+# Amazon Smart Lock Scraper Requirements
+patchright==1.55.1
