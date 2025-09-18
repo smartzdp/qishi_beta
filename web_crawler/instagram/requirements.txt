@@ -1,0 +1,7 @@
+# Instagram Password Encryption Dependencies
+pynacl>=1.5.0          # For NaCl sealed box encryption
+cryptography>=41.0.0   # For AES-GCM encryption
+requests>=2.31.0       # For HTTP requests to extract headers
+
+# Built-in modules (no installation needed):
+# base64, time, os, json

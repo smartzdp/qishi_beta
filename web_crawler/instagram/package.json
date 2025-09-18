@@ -1,0 +1,23 @@
+{
+  "name": "instagram-password-encryption",
+  "version": "1.0.0",
+  "description": "Instagram password encryption using Node.js with exact JavaScript implementation",
+  "main": "instagram_encrypt.js",
+  "scripts": {
+    "start": "node instagram_encrypt.js",
+    "test": "node instagram_encrypt.js"
+  },
+  "dependencies": {
+    "tweetnacl": "^1.0.3",
+    "blakejs": "^1.2.1"
+  },
+  "keywords": [
+    "instagram",
+    "encryption",
+    "password",
+    "nacl",
+    "aes-gcm"
+  ],
+  "author": "",
+  "license": "MIT"
+}

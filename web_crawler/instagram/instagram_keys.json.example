@@ -1,0 +1,6 @@
+{
+  "keyId": "DYNAMIC_FROM_INSTAGRAM_HEADERS",
+  "version": "DYNAMIC_FROM_INSTAGRAM_HEADERS", 
+  "publicKey": "DYNAMIC_FROM_INSTAGRAM_HEADERS",
+  "note": "This file shows the structure. Real keys are fetched automatically from Instagram's API headers."
+}
