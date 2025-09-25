@@ -1,0 +1,9 @@
+openai
+elasticsearch
+requests
+pymupdf
+jieba
+python-dotenv
+langchain
+langchain-community
+tiktoken
