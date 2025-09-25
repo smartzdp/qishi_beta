@@ -1,10 +1,11 @@
-# PDF Search RAG System
+# PDF & Audio Search RAG System
 
-A comprehensive Retrieval-Augmented Generation (RAG) system for querying PDF documents stored in Elasticsearch with intelligent query enhancement and web search fallback.
+A comprehensive Retrieval-Augmented Generation (RAG) system for querying PDF documents and audio files stored in Elasticsearch with intelligent query enhancement and web search fallback.
 
 ## 🚀 Features
 
 - **PDF Ingestion**: Extract text, images, and tables from PDFs
+- **Audio Ingestion**: Transcribe and chunk audio files (WAV, MP3, M4A, etc.)
 - **Elasticsearch Integration**: Vector and keyword hybrid search
 - **Query Enhancement**: Coreference resolution, query decomposition, and RAG fusion
 - **Intelligent Reranking**: External reranking service for better results
@@ -29,10 +30,11 @@ pdf_search/
 │   ├── retrieve.py         # Document retrieval and reranking
 │   ├── query.py            # Query enhancement functions
 │   └── web_search.py       # Web search functionality
-├── extract/                 # PDF extraction modules
+├── extract/                 # PDF and audio extraction modules
 │   ├── __init__.py
 │   ├── extract_image.py    # Image extraction and summarization
-│   └── extract_table.py    # Table extraction and context augmentation
+│   ├── extract_table.py    # Table extraction and context augmentation
+│   └── extract_audio.py    # Audio transcription and chunking
 └── embedding/               # Embedding service
     ├── __init__.py
     └── embedding_service.py
@@ -66,13 +68,13 @@ pdf_search/
 
 ## 📖 Usage
 
-### 1. Ingest PDFs
+### 1. Ingest Files
 ```bash
 python start_es_db.py
 ```
 - Select Elasticsearch index
-- Choose PDF directory
-- Enable/disable image and table extraction
+- Choose directory with PDF and audio files
+- Enable/disable image and table extraction (for PDFs)
 - Automatic indexing with progress tracking
 
 ### 2. Query Documents
@@ -93,10 +95,12 @@ python query_es_db.py
 ## 🔧 Key Functions
 
 - **`ingest_pdf()`**: Process and index PDF documents
+- **`ingest_audio()`**: Transcribe and index audio files
 - **`enhance_query()`**: Improve queries with decomposition and fusion
 - **`enhance_retrieve()`**: Hybrid search with reranking
 - **`extract_images_from_pdf()`**: Extract and summarize images
 - **`extract_tables_from_pdf()`**: Extract and augment tables
+- **`transcribe_audio()`**: Transcribe audio files with Faster Whisper
 - **`ESClient`**: Elasticsearch operations (create, delete, search indices)
 
 ## 🌐 Web Search Integration

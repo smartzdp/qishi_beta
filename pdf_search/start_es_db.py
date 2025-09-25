@@ -16,7 +16,8 @@ from pathlib import Path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from elastic_search import ESClient
-from rag.ingest import ingest_pdf
+from rag.ingest import ingest_pdf, ingest_audio
+from constants import PDF_FILE_EXTENSIONS, AUDIO_FILE_EXTENSIONS
 
 
 def check_virtual_environment():
@@ -92,8 +93,8 @@ def get_index_name():
     )
 
 
-def get_pdf_directory():
-    """Get PDF directory path from user."""
+def get_file_directory():
+    """Get directory path containing files from user."""
     def validate_directory(path):
         if not path:
             return False
@@ -107,7 +108,7 @@ def get_pdf_directory():
         return True
     
     return get_user_input(
-        "Enter directory path containing PDF files: ",
+        "Enter directory path containing files: ",
         validate_directory,
         "Please enter a valid directory path."
     )
@@ -125,32 +126,40 @@ def get_boolean_input(prompt):
             print("Please answer yes (y) or no (n).")
 
 
-def find_pdf_files(directory):
-    """Find all PDF files in the given directory."""
-    pdf_patterns = ['*.pdf', '*.PDF']
-    pdf_files = []
+def find_supported_files(directory):
+    """Find all supported files (PDF and audio) in the given directory."""
+    all_patterns = []
     
-    for pattern in pdf_patterns:
-        pdf_files.extend(glob.glob(os.path.join(directory, pattern)))
+    # Add PDF patterns
+    for ext in PDF_FILE_EXTENSIONS:
+        all_patterns.extend([f'*.{ext}', f'*.{ext.upper()}'])
     
-    return sorted(pdf_files)
+    # Add audio patterns
+    for ext in AUDIO_FILE_EXTENSIONS:
+        all_patterns.extend([f'*.{ext}', f'*.{ext.upper()}'])
+    
+    supported_files = []
+    for pattern in all_patterns:
+        supported_files.extend(glob.glob(os.path.join(directory, pattern)))
+    
+    return sorted(supported_files)
 
 
-def confirm_settings(index_name, pdf_directory, pdf_files, include_image, include_table):
+def confirm_settings(index_name, file_directory, supported_files, include_image, include_table):
     """Display settings and get user confirmation."""
     print("\n" + "="*60)
     print("📋 INGESTION SETTINGS SUMMARY")
     print("="*60)
     print(f"Index Name: {index_name}")
-    print(f"PDF Directory: {pdf_directory}")
-    print(f"Found PDF Files: {len(pdf_files)}")
+    print(f"File Directory: {file_directory}")
+    print(f"Found Supported Files: {len(supported_files)}")
     
-    if pdf_files:
-        print("\nPDF Files to be processed:")
-        for i, file_path in enumerate(pdf_files[:5], 1):  # Show first 5 files
+    if supported_files:
+        print("\nFiles to be processed:")
+        for i, file_path in enumerate(supported_files[:5], 1):  # Show first 5 files
             print(f"  {i}. {os.path.basename(file_path)}")
-        if len(pdf_files) > 5:
-            print(f"  ... and {len(pdf_files) - 5} more files")
+        if len(supported_files) > 5:
+            print(f"  ... and {len(supported_files) - 5} more files")
     
     print(f"\nImage Extraction: {'✓ Enabled' if include_image else '✗ Disabled'}")
     print(f"Table Extraction: {'✓ Enabled' if include_table else '✗ Disabled'}")
@@ -176,15 +185,15 @@ def main():
     print("-" * 20)
     index_name = get_index_name()
     
-    pdf_directory = get_pdf_directory()
+    file_directory = get_file_directory()
     
-    # Find PDF files
-    pdf_files = find_pdf_files(pdf_directory)
-    if not pdf_files:
-        print(f"❌ No PDF files found in '{pdf_directory}'")
+    # Find supported files
+    supported_files = find_supported_files(file_directory)
+    if not supported_files:
+        print(f"❌ No supported files found in '{file_directory}'")
         return
     
-    print(f"✓ Found {len(pdf_files)} PDF files")
+    print(f"✓ Found {len(supported_files)} supported files")
     
     # Get extraction options
     print("\n🔧 Extraction Options")
@@ -193,7 +202,7 @@ def main():
     include_table = get_boolean_input("Include table extraction?")
     
     # Confirm settings
-    if not confirm_settings(index_name, pdf_directory, pdf_files, include_image, include_table):
+    if not confirm_settings(index_name, file_directory, supported_files, include_image, include_table):
         print("Operation cancelled.")
         return
     
@@ -219,26 +228,44 @@ def main():
         print(f"❌ Failed to create index: {e}")
         return
     
-    # Process PDF files
-    print(f"\n📄 Processing {len(pdf_files)} PDF files...")
+    # Process files based on extension
+    print(f"\n📄 Processing {len(supported_files)} files...")
     print("="*60)
     
     successful_files = 0
     failed_files = []
     
-    for i, file_path in enumerate(pdf_files, 1):
-        print(f"\n[{i}/{len(pdf_files)}] Processing: {os.path.basename(file_path)}")
+    for i, file_path in enumerate(supported_files, 1):
+        print(f"\n[{i}/{len(supported_files)}] Processing: {os.path.basename(file_path)}")
+        
+        # Get file extension
+        file_ext = os.path.splitext(file_path)[1].lower()
         
         try:
-            ingest_pdf(
-                es=es_client.es,
-                es_index=index_name,
-                file_path=file_path,
-                include_image=include_image,
-                include_table=include_table
-            )
-            print(f"✓ Successfully processed: {os.path.basename(file_path)}")
-            successful_files += 1
+            if file_ext in [f'.{ext}' for ext in PDF_FILE_EXTENSIONS]:
+                # Process PDF file
+                ingest_pdf(
+                    es=es_client.es,
+                    es_index=index_name,
+                    file_path=file_path,
+                    include_image=include_image,
+                    include_table=include_table
+                )
+                print(f"✓ Successfully processed PDF: {os.path.basename(file_path)}")
+                successful_files += 1
+            elif file_ext in [f'.{ext}' for ext in AUDIO_FILE_EXTENSIONS]:
+                # Process audio file
+                ingest_audio(
+                    es=es_client.es,
+                    es_index=index_name,
+                    file_path=file_path
+                )
+                print(f"✓ Successfully processed audio: {os.path.basename(file_path)}")
+                successful_files += 1
+            else:
+                print(f"⚠️  Skipping unsupported file type: {file_ext}")
+                continue
+                
         except Exception as e:
             print(f"❌ Failed to process {os.path.basename(file_path)}: {e}")
             failed_files.append((file_path, str(e)))

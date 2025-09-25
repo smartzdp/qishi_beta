@@ -4,9 +4,9 @@ import time
 from langchain_community.document_loaders import PyMuPDFLoader
 
 from elastic_search import ESClient
-from utils import split_documents_into_chunks
+from utils import split_documents_into_chunks, chunk_audio_segments
 from embedding import embedding
-from extract import extract_images_from_pdf, extract_tables_from_pdf
+from extract import extract_images_from_pdf, extract_tables_from_pdf, transcribe_audio
 
 
 def ingest_pdf(es, es_index, file_path, include_image=False, include_table=False):
@@ -110,5 +110,55 @@ def ingest_pdf(es, es_index, file_path, include_image=False, include_table=False
                     time.sleep(1)
         
         print("Table ingestion completed")
+
+
+def ingest_audio(es, es_index, file_path, json_path=None, chunk_size=256, chunk_overlap=128):
+    """Ingest audio file and index transcribed chunks to Elasticsearch."""
+    print(f"Ingesting audio file: {file_path}")
+    
+    # Transcribe audio file
+    metadata, segments = transcribe_audio(file_path, json_path)
+    print(f"Audio metadata: {metadata}")
+    
+    if not segments:
+        print("No audio segments found")
+        return
+    
+    # Chunk audio segments
+    chunks = chunk_audio_segments(segments, chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+    print(f"Created {len(chunks)} audio chunks")
+    
+    # Process chunks in batches
+    batch = []
+    for i, chunk in enumerate(chunks):
+        batch.append(chunk)
+        
+        if len(batch) == 25 or i == len(chunks) - 1:
+            embeddings = embedding([b.page_content for b in batch])
+            for j, pc in enumerate(batch):
+                # Add type and file_path to metadata
+                metadata_dict = {k: str(v) for k, v in pc.metadata.items() if v and str(v).strip()}
+                metadata_dict["type"] = "audio"
+                metadata_dict["file_path"] = file_path
+                metadata_dict["language"] = metadata.get("language", "unknown")
+                metadata_dict["duration"] = str(metadata.get("duration", 0))
+                
+                body = {
+                    "text": pc.page_content,
+                    "vector": embeddings[j],
+                    "metadata": metadata_dict,
+                }
+                retry = 0
+                while retry <= 5:
+                    try:
+                        es.index(index=es_index, body=body)
+                        break
+                    except Exception as e:
+                        print(f"[Elastic Error] {str(e)} retry")
+                        retry += 1
+                        time.sleep(1)
+            batch = []
+    
+    print("Audio ingestion completed")
 
 

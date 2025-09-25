@@ -7,3 +7,4 @@ python-dotenv
 langchain
 langchain-community
 tiktoken
+faster-whisper
