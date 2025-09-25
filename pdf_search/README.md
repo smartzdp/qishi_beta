@@ -40,14 +40,21 @@ pdf_search/
 
 ## 🛠️ Setup
 
-1. **Install dependencies**:
+1. **Start Elasticsearch service**:
+   ```bash
+   # Install and start Elasticsearch locally (Elasticsearch only)
+   curl -fsSL https://elastic.co/start-local | sh -s -- --esonly
+   ```
+   Follow the [official guide](https://github.com/elastic/start-local) for detailed instructions.
+
+2. **Install dependencies**:
    ```bash
    python -m venv venv
    source venv/bin/activate
    pip install -r requirements.txt
    ```
 
-2. **Configure environment**:
+3. **Configure environment**:
    ```bash
    # Create .env file with your API keys and URLs
    ES_URL=http://localhost:9200
