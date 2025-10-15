@@ -1,0 +1,3 @@
+[submodule "firebase-demo"]
+	path = firebase-demo
+	url = https://github.com/chifn/firebase-demo.git
