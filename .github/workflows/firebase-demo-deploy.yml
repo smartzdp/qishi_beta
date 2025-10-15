@@ -37,7 +37,7 @@ jobs:
         REMOTE_USER: ${{ secrets.TEST_2BRAIN_USER }}
         ARGS: "-avzL"
         SOURCE: "firebase-demo/dist/"
-        TARGET: "/server/www/depei.zhang/firebase-demo"
+        TARGET: "server/www/depei.zhang/firebase-demo"
 #        SCRIPT_AFTER: |
 
 
