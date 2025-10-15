@@ -12,6 +12,7 @@ on:
     paths:
       - 'social_media/**'  # 只有social_media目录变化时才触发
       - '.github/workflows/social-media-deploy.yml'  # workflow文件变化时也触发
+      - '!social_media/**/*.md'  # 排除md文件变化
 
 jobs:
   deploy:
@@ -43,4 +44,10 @@ jobs:
         REMOTE_PORT: ${{ secrets.TEST_2BRAIN_PORT }}
         ARGS: "-avzL"
         SOURCE: "social_media/dist/"
-        TARGET: "/home/track_a/server/www/depei.zhang/social_media"
+        TARGET: "server/www/depei.zhang/social_media"
+        SCRIPT_BEFORE: |
+          mkdir -p server/www/depei.zhang/social_media
+          echo "Target directory created or already exists"
+        SCRIPT_AFTER: |
+          chmod -R 755 server/www/depei.zhang/social_media
+          echo "Target directory permissions updated"

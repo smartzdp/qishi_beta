@@ -1,6 +1,6 @@
 # This is a basic workflow that is dev triggered
 
-name: auto deploy to server
+name: firebase-demo auto deploy to server
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
@@ -12,6 +12,7 @@ on:
     paths:
       - 'firebase-demo/**'  # 只有firebase-demo目录变化时才触发
       - '.github/workflows/firebase-demo-deploy.yml'  # workflow文件变化时也触发
+      - '!firebase-demo/**/*.md'  # 排除md文件变化
 
 jobs:
   deploy:
@@ -43,4 +44,10 @@ jobs:
         REMOTE_PORT: ${{ secrets.TEST_2BRAIN_PORT }}
         ARGS: "-avzL"
         SOURCE: "firebase-demo/dist/"
-        TARGET: "/home/track_a/server/www/depei.zhang/firebase-demo"
+        TARGET: "server/www/depei.zhang/firebase-demo"
+        SCRIPT_BEFORE: |
+          mkdir -p server/www/depei.zhang/firebase-demo
+          echo "Target directory created or already exists"
+        SCRIPT_AFTER: |
+          chmod -R 755 server/www/depei.zhang/firebase-demo
+          echo "Target directory permissions updated"
