@@ -6,12 +6,12 @@ import { getFirestore } from 'firebase/firestore';
 // Firebase配置对象
 // 注意：请将以下配置替换为您自己的Firebase项目配置
 const firebaseConfig = {
-  apiKey: "AIzaSyAl5966GNZpEpWkgCpHvCktuMXV5sAKyFc",
-  authDomain: "mybase-c804e.firebaseapp.com",
-  projectId: "mybase-c804e",
-  storageBucket: "mybase-c804e.firebasestorage.app",
-  messagingSenderId: "226810225204",
-  appId: "1:226810225204:web:d503f33981f87e3458a061"
+  apiKey: "AIzaSyAJhQCFbdRFRq1S_FCk3vU0KQIVKCX9yIc",
+  authDomain: "mybase-b0f64.firebaseapp.com",
+  projectId: "mybase-b0f64",
+  storageBucket: "mybase-b0f64.firebasestorage.app",
+  messagingSenderId: "870866772477",
+  appId: "1:870866772477:web:714ae4e59197855f01b994"
 };
 
 // 添加错误处理

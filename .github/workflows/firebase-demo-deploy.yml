@@ -21,20 +21,23 @@ jobs:
       
     # 安装依赖
     - name: Install Dependencies
+      working-directory: ./firebase-demo
       run: npm install
 
     # 打包正式环境
     - name: Build
+      working-directory: ./firebase-demo
       run: npm run build
 
     - name: Deploy to Server
       uses: easingthemes/ssh-deploy@v5.0.3
       env:
-        SSH_PRIVATE_KEY: ${{ secrets.TEST1_KEY }}
-        REMOTE_HOST: ${{ secrets.TEST1_HOST }}
-        REMOTE_USER: ${{ secrets.TEST1_USER }}
+        SSH_PRIVATE_KEY: ${{ secrets.TEST_2BRAIN_KEY }}
+        REMOTE_HOST: ${{ secrets.TEST_2BRAIN_HOST }}
+        REMOTE_USER: ${{ secrets.TEST_2BRAIN_USER }}
         ARGS: "-avzL"
-        SOURCE: "dist/"
+        SOURCE: "firebase-demo/dist/"
         TARGET: "/server/www/firebase-demo"
 #        SCRIPT_AFTER: |
+
 
