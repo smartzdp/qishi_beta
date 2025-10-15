@@ -1,0 +1,101 @@
+/* 主应用样式 - 淡粉色主题 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe4e9 100%);
+  color: #333;
+  line-height: 1.6;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-content {
+  flex: 1;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* 加载状态 */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.loading {
+  font-size: 18px;
+  color: #ff9bb5;
+  text-align: center;
+}
+
+/* 已登录用户界面 */
+.logged-in-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* 未登录用户界面 */
+.guest-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.login-section {
+  display: flex;
+  justify-content: center;
+}
+
+.posts-section {
+  margin-top: 20px;
+}
+
+.content-section {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 15px rgba(255, 155, 181, 0.2);
+  overflow: hidden;
+}
+
+/* 响应式设计 */
+@media (min-width: 768px) {
+  .logged-in-content {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 30px;
+  }
+  
+  .guest-content {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 30px;
+  }
+}
+
+@media (max-width: 767px) {
+  .app-content {
+    padding: 15px;
+  }
+  
+  .content-section {
+    margin-bottom: 20px;
+  }
+}
+
