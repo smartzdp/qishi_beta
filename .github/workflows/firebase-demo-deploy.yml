@@ -35,6 +35,7 @@ jobs:
         SSH_PRIVATE_KEY: ${{ secrets.TEST_2BRAIN_KEY }}
         REMOTE_HOST: ${{ secrets.TEST_2BRAIN_HOST }}
         REMOTE_USER: ${{ secrets.TEST_2BRAIN_USER }}
+        REMOTE_PORT: ${{ secrets.TEST_2BRAIN_PORT }}
         ARGS: "-avzL"
         SOURCE: "firebase-demo/dist/"
         TARGET: "server/www/depei.zhang/firebase-demo"
