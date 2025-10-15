@@ -113,7 +113,7 @@ const firebaseConfig = {
 
 ### GitHub 推送
 ```bash
-cd /Users/hannahjiang/Desktop/depei.zhang/genai_class/qishi_beta/social_media
+cd social_media
 git add .
 git commit -m "社交媒体平台完整版 - 包含点赞、回帖、排序功能"
 git push origin main

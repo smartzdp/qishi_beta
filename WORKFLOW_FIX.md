@@ -2,10 +2,21 @@
 
 ## 🐛 问题描述
 
+### 问题 1: Rollup 依赖问题
+
 在 GitHub Actions 的 Linux 环境中部署时出现以下错误：
 
 ```
 Error: Cannot find module @rollup/rollup-linux-x64-gnu
+```
+
+### 问题 2: rsync 路径错误
+
+部署到服务器时出现 rsync 错误：
+
+```
+client_loop: send disconnect: Broken pipe
+rsync error: error in rsync protocol data stream (code 12)
 ```
 
 ## 🔍 问题原因
@@ -18,6 +29,8 @@ Error: Cannot find module @rollup/rollup-linux-x64-gnu
 相关 issue: https://github.com/npm/cli/issues/4828
 
 ## ✅ 解决方案
+
+### 解决方案 1: 修复 Rollup 依赖
 
 在 workflow 中，**删除本地的 `node_modules` 和 `package-lock.json` 后重新安装**。
 
@@ -39,16 +52,50 @@ Error: Cannot find module @rollup/rollup-linux-x64-gnu
     npm install
 ```
 
+### 解决方案 2: 修复 rsync 目标路径
+
+**问题**：TARGET 路径使用了相对路径，需要使用服务器的绝对路径
+```yaml
+# 错误
+TARGET: "server/www/depei.zhang/firebase-demo"
+
+# 正确（服务器上的绝对路径）
+TARGET: "/home/track_a/server/www/depei.zhang/firebase-demo"
+```
+
 ## 📝 为什么这样能解决问题
 
+### 问题 1 原因
 1. **删除本地锁文件**：本地的 `package-lock.json` 可能包含 macOS 特定的依赖信息
 2. **重新解析依赖**：在 Linux 环境中重新解析，会正确安装 Linux 特定的包
 3. **fresh install**：确保所有 optional dependencies 在当前平台正确安装
 
+### 问题 2 原因
+1. **相对路径问题**：rsync 需要服务器上的完整绝对路径
+2. **路径解析错误**：相对路径会导致 rsync 无法找到正确的目标目录
+3. **连接中断**：无法正确创建目标目录导致连接断开
+4. **正确路径**：服务器的 home folder 是 `/home/track_a/`
+
 ## 🔧 已修复的文件
 
-- ✅ `.github/workflows/social-media-deploy.yml`
-- ✅ `.github/workflows/firebase-demo-deploy.yml`
+- ✅ `.github/workflows/social-media-deploy.yml`（Rollup 依赖 + rsync 路径）
+- ✅ `.github/workflows/firebase-demo-deploy.yml`（Rollup 依赖 + rsync 路径）
+
+### 完整修复内容
+
+```yaml
+# 安装依赖 - 修复 Rollup 问题
+- name: Install Dependencies
+  working-directory: ./social_media
+  run: |
+    rm -rf node_modules package-lock.json  # 新增
+    npm install
+
+# 部署 - 修复路径问题
+- name: Deploy to Server
+  env:
+    TARGET: "/home/track_a/server/www/depei.zhang/social_media"  # 使用绝对路径
+```
 
 ## 📊 影响
 

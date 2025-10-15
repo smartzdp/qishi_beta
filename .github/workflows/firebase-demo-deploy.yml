@@ -43,4 +43,4 @@ jobs:
         REMOTE_PORT: ${{ secrets.TEST_2BRAIN_PORT }}
         ARGS: "-avzL"
         SOURCE: "firebase-demo/dist/"
-        TARGET: "server/www/depei.zhang/firebase-demo"
+        TARGET: "/home/track_a/server/www/depei.zhang/firebase-demo"

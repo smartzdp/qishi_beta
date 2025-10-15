@@ -43,4 +43,4 @@ jobs:
         REMOTE_PORT: ${{ secrets.TEST_2BRAIN_PORT }}
         ARGS: "-avzL"
         SOURCE: "social_media/dist/"
-        TARGET: "server/www/depei.zhang/social_media"
+        TARGET: "/home/track_a/server/www/depei.zhang/social_media"
