@@ -1,0 +1,40 @@
+# This is a basic workflow that is dev triggered
+
+name: auto deploy to server
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:  # 手动执行工作流
+  push:
+    branches:
+      - main  # main分支push时自动执行工作流
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    # 下载源码
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    # 安装依赖
+    - name: Install Dependencies
+      run: npm install
+
+    # 打包正式环境
+    - name: Build
+      run: npm run build
+
+    - name: Deploy to Server
+      uses: easingthemes/ssh-deploy@v5.0.3
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.TEST1_KEY }}
+        REMOTE_HOST: ${{ secrets.TEST1_HOST }}
+        REMOTE_USER: ${{ secrets.TEST1_USER }}
+        ARGS: "-avzL"
+        SOURCE: "dist/"
+        TARGET: "/server/www/firebase-demo"
+#        SCRIPT_AFTER: |
+

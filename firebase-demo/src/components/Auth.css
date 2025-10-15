@@ -1,0 +1,211 @@
+/* 认证组件样式 */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  padding: 20px;
+}
+
+.auth-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-card h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: #555;
+  font-size: 14px;
+}
+
+.form-group input {
+  padding: 12px 16px;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+  background: #fafafa;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group input::placeholder {
+  color: #999;
+}
+
+.error-message {
+  background: #fee;
+  color: #c33;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #fcc;
+  font-size: 14px;
+  text-align: center;
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.auth-switch {
+  margin-top: 30px;
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.auth-switch p {
+  color: #666;
+  font-size: 14px;
+}
+
+.switch-btn {
+  background: none;
+  border: none;
+  color: #667eea;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+  margin-left: 5px;
+  transition: color 0.3s ease;
+}
+
+.switch-btn:hover {
+  color: #5a6fd8;
+}
+
+/* 分隔线样式 */
+.auth-divider {
+  position: relative;
+  text-align: center;
+  margin: 25px 0;
+}
+
+.auth-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #e1e5e9;
+}
+
+.auth-divider span {
+  background: white;
+  padding: 0 15px;
+  color: #999;
+  font-size: 14px;
+  position: relative;
+}
+
+/* Google登录按钮样式 */
+.google-btn {
+  width: 100%;
+  background: white;
+  color: #333;
+  border: 2px solid #e1e5e9;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.google-btn:hover:not(:disabled) {
+  border-color: #dadce0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.google-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.google-icon {
+  flex-shrink: 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 767px) {
+  .auth-container {
+    padding: 15px;
+  }
+  
+  .auth-card {
+    padding: 30px 20px;
+  }
+  
+  .auth-card h2 {
+    font-size: 24px;
+    margin-bottom: 25px;
+  }
+  
+  .form-group input {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+  
+  .submit-btn {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+}
