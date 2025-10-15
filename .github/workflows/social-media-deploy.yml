@@ -1,6 +1,6 @@
 # This is a basic workflow that is dev triggered
 
-name: auto deploy to server
+name: social-media auto deploy to server
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
@@ -10,8 +10,8 @@ on:
     branches:
       - main  # main分支push时自动执行工作流
     paths:
-      - 'firebase-demo/**'  # 只有firebase-demo目录变化时才触发
-      - '.github/workflows/firebase-demo-deploy.yml'  # workflow文件变化时也触发
+      - 'social_media/**'  # 只有social_media目录变化时才触发
+      - '.github/workflows/social-media-deploy.yml'  # workflow文件变化时也触发
 
 jobs:
   deploy:
@@ -24,12 +24,12 @@ jobs:
       
     # 安装依赖
     - name: Install Dependencies
-      working-directory: ./firebase-demo
+      working-directory: ./social_media
       run: npm install
 
     # 打包正式环境
     - name: Build
-      working-directory: ./firebase-demo
+      working-directory: ./social_media
       run: npm run build
 
     - name: Deploy to Server
@@ -40,5 +40,5 @@ jobs:
         REMOTE_USER: ${{ secrets.TEST_2BRAIN_USER }}
         REMOTE_PORT: ${{ secrets.TEST_2BRAIN_PORT }}
         ARGS: "-avzL"
-        SOURCE: "firebase-demo/dist/"
-        TARGET: "server/www/depei.zhang/firebase-demo"
+        SOURCE: "social_media/dist/"
+        TARGET: "server/www/depei.zhang/social_media"
