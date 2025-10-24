@@ -1,0 +1,555 @@
+[
+  {
+    "file_name": "学生开题答辩组修改意见汇总.xlsx",
+    "sheet_name": "Sheet1",
+    "column_name": "序号",
+    "field_description": "字段名：序号，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：1, 2, 3",
+    "column_type": "date"
+  },
+  {
+    "file_name": "学生开题答辩组修改意见汇总.xlsx",
+    "sheet_name": "Sheet1",
+    "column_name": "班级",
+    "field_description": "字段名：班级，类型：categorical，常见值：12国贸（3）, 12国贸（2）, 12经济（1），示例：12国贸（1）, 12国贸（1）, 12国贸（1）",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "学生开题答辩组修改意见汇总.xlsx",
+    "sheet_name": "Sheet1",
+    "column_name": "学号",
+    "field_description": "字段名：学号，类型：categorical，常见值：120107200125, 120107200126, 120107200148，示例：120107200125, 120107200126, 120107200127",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "学生开题答辩组修改意见汇总.xlsx",
+    "sheet_name": "Sheet1",
+    "column_name": "姓名",
+    "field_description": "字段名：姓名，类型：categorical，常见值：卢荣荣, 吕文杰, 徐升阳，示例：卢荣荣, 吕文杰, 马佳露",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "学生开题答辩组修改意见汇总.xlsx",
+    "sheet_name": "Sheet1",
+    "column_name": "导师",
+    "field_description": "字段名：导师，类型：categorical，常见值：邱风, 郑恒, 严北战，示例：茹玉骢, 张利风, 熊艳",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "学生开题答辩组修改意见汇总.xlsx",
+    "sheet_name": "Sheet1",
+    "column_name": "组别",
+    "field_description": "字段名：组别，类型：categorical，常见值：第六组, 第十一组，示例：第六组, 第六组, 第六组",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "学生开题答辩组修改意见汇总.xlsx",
+    "sheet_name": "Sheet1",
+    "column_name": "开题报告题目",
+    "field_description": "字段名：开题报告题目，类型：categorical，常见值：人民币离岸市场与在岸市场汇率的联动关系研究, 浙江省茶叶出口竞争力现状及提升对策, 中国制造业世界贸易地位的重新思考——基于贸易附加值的视角，示例：人民币离岸市场与在岸市场汇率的联动关系研究, 浙江省茶叶出口竞争力现状及提升对策, 碳关税对我国出口贸易的影响及对策分析",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "学生开题答辩组修改意见汇总.xlsx",
+    "sheet_name": "Sheet1",
+    "column_name": "答辩组修改意见",
+    "field_description": "字段名：答辩组修改意见，类型：categorical，常见值：1.数据扩展, 1、实证要有目标，需要理论上的探讨，怎么影响的，再开始实证。2、第二章的拟定和后面关联不大，很怪异。3、写的内容，可以从文献综述中提取需要的内容4经济意义解释放在这不妥, 1、外贸企业界定需要缩小2、逻辑上的对应3、计量实证，理论要有支撑点4、标题重拟要么去掉新常态，要么往前推，4年变一次数据，转型升级出于什么阶段，转型升级的现状需要数据来支撑。，示例：1.数据扩展, 1.哪些因素影响竞争力 2.归纳的太乱，内容不规范写一个现状然后再写竞争力然后对策 表达有问题 3.重点不够突出 4.对策要具体, 1. 集中于关税 2.第二章要提及碳关税然后贸易，再模拟（逻辑）第三章做细 3.从机理来讲碳关税",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "学生开题答辩组修改意见汇总.xlsx",
+    "sheet_name": "Sheet1",
+    "column_name": "备注",
+    "field_description": "字段名：备注，类型：categorical，常见值：不通过, 延期开题，示例：不通过",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "VIP斑布&川娃子包销系列产品表-2025（清仓处理）.xlsx",
+    "sheet_name": "斑布  川娃子 包销系列",
+    "column_name": "序号",
+    "field_description": "字段名：序号，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：1, 1, 2",
+    "column_type": "date"
+  },
+  {
+    "file_name": "VIP斑布&川娃子包销系列产品表-2025（清仓处理）.xlsx",
+    "sheet_name": "斑布  川娃子 包销系列",
+    "column_name": "品牌",
+    "field_description": "字段名：品牌，类型：categorical，常见值：斑布, 川娃子，示例：斑布, 斑布, 斑布",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "VIP斑布&川娃子包销系列产品表-2025（清仓处理）.xlsx",
+    "sheet_name": "斑布  川娃子 包销系列",
+    "column_name": "商品名称",
+    "field_description": "字段名：商品名称，类型：categorical，常见值：斑布&熊猫周末系列手帕纸12包, 斑布&熊猫周末系列手帕纸36包, 斑布&熊猫周末系列抽纸6包，示例：斑布&熊猫周末系列手帕纸12包, 斑布&熊猫周末系列手帕纸36包, 斑布&熊猫周末系列抽纸6包",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "VIP斑布&川娃子包销系列产品表-2025（清仓处理）.xlsx",
+    "sheet_name": "斑布  川娃子 包销系列",
+    "column_name": "产品介绍",
+    "field_description": "字段名：产品介绍，类型：categorical，常见值：斑布纸有生物精炼科技专利，从竹子中提炼的竹琨有抗菌、抑菌、除螨、防臭和抗紫外线功能；\n联名熊猫周末，独特设计即新潮又彰显成都安逸的生活态度。, 川娃子本款烧椒酱区别市面上“腌制辣椒”原料，采用新鲜辣椒作为原料；, 采用牛油作为原材料，使火锅更香，其中配料全部为自主研发，2-4人装不会浪费，礼盒装更具备送礼属性，示例：斑布纸有生物精炼科技专利，从竹子中提炼的竹琨有抗菌、抑菌、除螨、防臭和抗紫外线功能；\n联名熊猫周末，独特设计即新潮又彰显成都安逸的生活态度。, 斑布纸有生物精炼科技专利，从竹子中提炼的竹琨有抗菌、抑菌、除螨、防臭和抗紫外线功能；\n联名熊猫周末，独特设计即新潮又彰显成都安逸的生活态度。, 斑布纸有生物精炼科技专利，从竹子中提炼的竹琨有抗菌、抑菌、除螨、防臭和抗紫外线功能；\n联名熊猫周末，独特设计即新潮又彰显成都安逸的生活态度。",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "VIP斑布&川娃子包销系列产品表-2025（清仓处理）.xlsx",
+    "sheet_name": "斑布  川娃子 包销系列",
+    "column_name": "规格",
+    "field_description": "字段名：规格，类型：categorical，常见值：200mm*200mm*4层*8片/包\n\n8.47kg/箱, 135mm*200mm（3层100抽）/包\n\n9.48kg/箱, 102mm*110mm（4层）/卷\n\n9.19kg/箱，示例：200mm*200mm*4层*8片/包\n\n8.47kg/箱, 200mm*200mm*4层*8片/包\n\n8.47kg/箱, 135mm*200mm（3层100抽）/包\n\n9.48kg/箱",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "VIP斑布&川娃子包销系列产品表-2025（清仓处理）.xlsx",
+    "sheet_name": "斑布  川娃子 包销系列",
+    "column_name": "产品包装规格",
+    "field_description": "字段名：产品包装规格，类型：categorical，常见值：12包/条, 3条/36包, 6包/提，示例：12包/条, 3条/36包, 6包/提",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "VIP斑布&川娃子包销系列产品表-2025（清仓处理）.xlsx",
+    "sheet_name": "斑布  川娃子 包销系列",
+    "column_name": "产品单位",
+    "field_description": "字段名：产品单位，类型：categorical，常见值：箱, 盒, 提，示例：条, 箱, 提",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "VIP斑布&川娃子包销系列产品表-2025（清仓处理）.xlsx",
+    "sheet_name": "斑布  川娃子 包销系列",
+    "column_name": "箱规",
+    "field_description": "字段名：箱规，类型：categorical，常见值：/, 36, 12，示例：36, /, 12",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "VIP斑布&川娃子包销系列产品表-2025（清仓处理）.xlsx",
+    "sheet_name": "斑布  川娃子 包销系列",
+    "column_name": "订货单位",
+    "field_description": "字段名：订货单位，类型：categorical，常见值：箱, 盒, 提，示例：条, 箱, 提",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "VIP斑布&川娃子包销系列产品表-2025（清仓处理）.xlsx",
+    "sheet_name": "斑布  川娃子 包销系列",
+    "column_name": "成本价",
+    "field_description": "字段名：成本价，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：5.82, 14.7, 11.3",
+    "column_type": "date"
+  },
+  {
+    "file_name": "VIP斑布&川娃子包销系列产品表-2025（清仓处理）.xlsx",
+    "sheet_name": "斑布  川娃子 包销系列",
+    "column_name": "清仓价",
+    "field_description": "字段名：清仓价，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：6, 15, 11.5",
+    "column_type": "date"
+  },
+  {
+    "file_name": "VIP斑布&川娃子包销系列产品表-2025（清仓处理）.xlsx",
+    "sheet_name": "斑布  川娃子 包销系列",
+    "column_name": "VIP大渠道一件代发价格",
+    "field_description": "字段名：VIP大渠道一件代发价格，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：5.568, 12.71, 11.3",
+    "column_type": "date"
+  },
+  {
+    "file_name": "VIP斑布&川娃子包销系列产品表-2025（清仓处理）.xlsx",
+    "sheet_name": "斑布  川娃子 包销系列",
+    "column_name": "一级经销价（一件代发）",
+    "field_description": "字段名：一级经销价（一件代发），类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：6.1248, 13.981, 12.43",
+    "column_type": "date"
+  },
+  {
+    "file_name": "VIP斑布&川娃子包销系列产品表-2025（清仓处理）.xlsx",
+    "sheet_name": "斑布  川娃子 包销系列",
+    "column_name": "二级经销价（一件代发）",
+    "field_description": "字段名：二级经销价（一件代发），类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：6.73728, 15.3791, 13.673",
+    "column_type": "date"
+  },
+  {
+    "file_name": "VIP斑布&川娃子包销系列产品表-2025（清仓处理）.xlsx",
+    "sheet_name": "斑布  川娃子 包销系列",
+    "column_name": "平台售价",
+    "field_description": "字段名：平台售价，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：9.9, 18.9, 19.9",
+    "column_type": "date"
+  },
+  {
+    "file_name": "VIP斑布&川娃子包销系列产品表-2025（清仓处理）.xlsx",
+    "sheet_name": "斑布  川娃子 包销系列",
+    "column_name": "京东价格",
+    "field_description": "字段名：京东价格，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：13.9, 19.9, 24.9",
+    "column_type": "date"
+  },
+  {
+    "file_name": "VIP斑布&川娃子包销系列产品表-2025（清仓处理）.xlsx",
+    "sheet_name": "斑布  川娃子 包销系列",
+    "column_name": "运费-偏远地区（新疆，西藏，海南，内蒙古）",
+    "field_description": "字段名：运费-偏远地区（新疆，西藏，海南，内蒙古），类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：11, 11, 11",
+    "column_type": "date"
+  },
+  {
+    "file_name": "VIP斑布&川娃子包销系列产品表-2025（清仓处理）.xlsx",
+    "sheet_name": "斑布  川娃子 包销系列",
+    "column_name": "Unnamed: 21",
+    "field_description": "字段名：Unnamed: 21，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：970, 4829, 4610",
+    "column_type": "date"
+  },
+  {
+    "file_name": "VIP斑布&川娃子包销系列产品表-2025（清仓处理）.xlsx",
+    "sheet_name": "斑布  川娃子 包销系列",
+    "column_name": "Unnamed: 22",
+    "field_description": "字段名：Unnamed: 22，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：12328.7, 153851.94, 205006.7",
+    "column_type": "date"
+  },
+  {
+    "file_name": "复杂表头.xlsx",
+    "sheet_name": "复杂表头",
+    "column_name": "产品信息",
+    "field_description": "字段名：产品信息，类型：categorical，常见值：产品名称, 苹果, 香蕉，示例：产品名称, 苹果, 香蕉",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "复杂表头.xlsx",
+    "sheet_name": "复杂表头",
+    "column_name": "产品信息.1",
+    "field_description": "字段名：产品信息.1，类型：categorical，常见值：产品编号, A001, A002，示例：产品编号, A001, A002",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "复杂表头.xlsx",
+    "sheet_name": "复杂表头",
+    "column_name": "销售数据",
+    "field_description": "字段名：销售数据，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：销售额, 2000, 1800",
+    "column_type": "date"
+  },
+  {
+    "file_name": "复杂表头.xlsx",
+    "sheet_name": "复杂表头",
+    "column_name": "销售数据.1",
+    "field_description": "字段名：销售数据.1，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：数量, 150, 120",
+    "column_type": "date"
+  },
+  {
+    "file_name": "cola.xlsx",
+    "sheet_name": "Sheet1",
+    "column_name": "日期",
+    "field_description": "字段名：日期，类型：date，范围：2025-03-01 至 2025-03-30，粒度：W，示例：2025-03-05 00:00:00, 2025-03-05 00:00:00, 2025-03-11 00:00:00",
+    "column_type": "date"
+  },
+  {
+    "file_name": "cola.xlsx",
+    "sheet_name": "Sheet1",
+    "column_name": "城市",
+    "field_description": "字段名：城市，类型：categorical，常见值：北京, 成都, 深圳，示例：北京, 广州, 成都",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "cola.xlsx",
+    "sheet_name": "Sheet1",
+    "column_name": "产品系列",
+    "field_description": "字段名：产品系列，类型：categorical，常见值：雪碧, 可口可乐, 零度可乐，示例：雪碧, 可口可乐, 雪碧",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "cola.xlsx",
+    "sheet_name": "Sheet1",
+    "column_name": "销售渠道",
+    "field_description": "字段名：销售渠道，类型：categorical，常见值：批发, 零售, 线上，示例：批发, 线上, 零售",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "cola.xlsx",
+    "sheet_name": "Sheet1",
+    "column_name": "销售数量",
+    "field_description": "字段名：销售数量，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：108, 371, 248",
+    "column_type": "date"
+  },
+  {
+    "file_name": "cola.xlsx",
+    "sheet_name": "Sheet1",
+    "column_name": "单价",
+    "field_description": "字段名：单价，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：3.2, 2.76, 3.94",
+    "column_type": "date"
+  },
+  {
+    "file_name": "cola.xlsx",
+    "sheet_name": "Sheet1",
+    "column_name": "总销售额",
+    "field_description": "字段名：总销售额，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：345.6, 1023.96, 977.12",
+    "column_type": "date"
+  },
+  {
+    "file_name": "cola.xlsx",
+    "sheet_name": "Sheet1",
+    "column_name": "折扣",
+    "field_description": "字段名：折扣，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：0.08, 0.09, 0.03",
+    "column_type": "date"
+  },
+  {
+    "file_name": "cola.xlsx",
+    "sheet_name": "Sheet1",
+    "column_name": "净销售额",
+    "field_description": "字段名：净销售额，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：318.35, 932.8, 947.81",
+    "column_type": "date"
+  },
+  {
+    "file_name": "cola.xlsx",
+    "sheet_name": "Sheet1",
+    "column_name": "销售代表",
+    "field_description": "字段名：销售代表，类型：categorical，常见值：李四, 王五, 孙七，示例：李四, 王五, 赵六",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "公共预算支出增长统计.xlsx",
+    "sheet_name": "表四",
+    "column_name": "表四  各级教育生均一般公共预算公用经费支出增长情况",
+    "field_description": "字段名：表四  各级教育生均一般公共预算公用经费支出增长情况，类型：categorical，常见值：省(区、市、县), 单位：元,       隆德县，示例：单位：元, 省(区、市、县), 省(区、市、县)",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "公共预算支出增长统计.xlsx",
+    "sheet_name": "表四",
+    "column_name": "表四  各级教育生均一般公共预算公用经费支出增长情况.1",
+    "field_description": "字段名：表四  各级教育生均一般公共预算公用经费支出增长情况.1，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：单位：元, 幼儿园, 2022年",
+    "column_type": "date"
+  },
+  {
+    "file_name": "公共预算支出增长统计.xlsx",
+    "sheet_name": "表四",
+    "column_name": "表四  各级教育生均一般公共预算公用经费支出增长情况.2",
+    "field_description": "字段名：表四  各级教育生均一般公共预算公用经费支出增长情况.2，类型：date，范围：1969-12-31 至 1970-01-01，粒度：D，示例：单位：元, 幼儿园, 增长率（%）",
+    "column_type": "date"
+  },
+  {
+    "file_name": "公共预算支出增长统计.xlsx",
+    "sheet_name": "表四",
+    "column_name": "表四  各级教育生均一般公共预算公用经费支出增长情况.3",
+    "field_description": "字段名：表四  各级教育生均一般公共预算公用经费支出增长情况.3，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：单位：元, 普通小学, 2022年",
+    "column_type": "date"
+  },
+  {
+    "file_name": "公共预算支出增长统计.xlsx",
+    "sheet_name": "表四",
+    "column_name": "表四  各级教育生均一般公共预算公用经费支出增长情况.4",
+    "field_description": "字段名：表四  各级教育生均一般公共预算公用经费支出增长情况.4，类型：date，范围：1969-12-31 至 1970-01-01，粒度：D，示例：单位：元, 普通小学, 增长率（%）",
+    "column_type": "date"
+  },
+  {
+    "file_name": "公共预算支出增长统计.xlsx",
+    "sheet_name": "表四",
+    "column_name": "表四  各级教育生均一般公共预算公用经费支出增长情况.5",
+    "field_description": "字段名：表四  各级教育生均一般公共预算公用经费支出增长情况.5，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：单位：元, 普通初中, 2022年",
+    "column_type": "date"
+  },
+  {
+    "file_name": "公共预算支出增长统计.xlsx",
+    "sheet_name": "表四",
+    "column_name": "表四  各级教育生均一般公共预算公用经费支出增长情况.6",
+    "field_description": "字段名：表四  各级教育生均一般公共预算公用经费支出增长情况.6，类型：date，范围：1969-12-31 至 1970-01-01，粒度：D，示例：单位：元, 普通初中, 增长率（%）",
+    "column_type": "date"
+  },
+  {
+    "file_name": "公共预算支出增长统计.xlsx",
+    "sheet_name": "表四",
+    "column_name": "表四  各级教育生均一般公共预算公用经费支出增长情况.7",
+    "field_description": "字段名：表四  各级教育生均一般公共预算公用经费支出增长情况.7，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：单位：元, 普通高中, 2022年",
+    "column_type": "date"
+  },
+  {
+    "file_name": "公共预算支出增长统计.xlsx",
+    "sheet_name": "表四",
+    "column_name": "表四  各级教育生均一般公共预算公用经费支出增长情况.8",
+    "field_description": "字段名：表四  各级教育生均一般公共预算公用经费支出增长情况.8，类型：date，范围：1969-12-31 至 1970-01-01，粒度：D，示例：单位：元, 普通高中, 增长率（%）",
+    "column_type": "date"
+  },
+  {
+    "file_name": "公共预算支出增长统计.xlsx",
+    "sheet_name": "表四",
+    "column_name": "表四  各级教育生均一般公共预算公用经费支出增长情况.9",
+    "field_description": "字段名：表四  各级教育生均一般公共预算公用经费支出增长情况.9，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：单位：元, 中等职业学校, 2022年",
+    "column_type": "date"
+  },
+  {
+    "file_name": "公共预算支出增长统计.xlsx",
+    "sheet_name": "表四",
+    "column_name": "表四  各级教育生均一般公共预算公用经费支出增长情况.10",
+    "field_description": "字段名：表四  各级教育生均一般公共预算公用经费支出增长情况.10，类型：date，范围：1969-12-31 至 1970-01-01，粒度：D，示例：单位：元, 中等职业学校, 增长率（%）",
+    "column_type": "date"
+  },
+  {
+    "file_name": "公共预算支出增长统计.xlsx",
+    "sheet_name": "表四",
+    "column_name": "表四  各级教育生均一般公共预算公用经费支出增长情况.11",
+    "field_description": "字段名：表四  各级教育生均一般公共预算公用经费支出增长情况.11，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：单位：元, 普通高等学校, 2022年",
+    "column_type": "date"
+  },
+  {
+    "file_name": "公共预算支出增长统计.xlsx",
+    "sheet_name": "表四",
+    "column_name": "表四  各级教育生均一般公共预算公用经费支出增长情况.12",
+    "field_description": "字段名：表四  各级教育生均一般公共预算公用经费支出增长情况.12，类型：date，范围：1969-12-31 至 1970-01-01，粒度：D，示例：单位：元, 普通高等学校, 增长率（%）",
+    "column_type": "date"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "10月",
+    "column_name": "Unnamed: 0",
+    "field_description": "字段名：Unnamed: 0，类型：categorical，常见值：电机  编号, 统计值, 2#，示例：电机  编号, 电机  编号, 1#",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "10月",
+    "column_name": "Unnamed: 1",
+    "field_description": "字段名：Unnamed: 1，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：发电量（kwh）, 本月, 23752",
+    "column_type": "date"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "10月",
+    "column_name": "Unnamed: 2",
+    "field_description": "字段名：Unnamed: 2，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：发电量（kwh）, 本年, 23752",
+    "column_type": "date"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "10月",
+    "column_name": "Unnamed: 3",
+    "field_description": "字段名：Unnamed: 3，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：发电小时数, 发电小时数, 391.06",
+    "column_type": "date"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "10月",
+    "column_name": "Unnamed: 4",
+    "field_description": "字段名：Unnamed: 4，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：电机正常运行时间, 电机正常运行时间, 743.35",
+    "column_type": "date"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "10月",
+    "column_name": "编制",
+    "field_description": "字段名：编制，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：BB, 电机故障小时数, 电机故障小时数",
+    "column_type": "date"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "10月",
+    "column_name": "审核",
+    "field_description": "字段名：审核，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：AAA, 电力有效小时数, 电力有效小时数",
+    "column_type": "date"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "10月",
+    "column_name": "审核.1",
+    "field_description": "字段名：审核.1，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：AAA, 非电机故障小时数, 服务时间",
+    "column_type": "date"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "10月",
+    "column_name": "审核.2",
+    "field_description": "字段名：审核.2，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：AAA, 非电机故障小时数, 服务时间",
+    "column_type": "date"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "10月",
+    "column_name": "审核.3",
+    "field_description": "字段名：审核.3，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：AAA, 非电机故障小时数, 人工停机时间",
+    "column_type": "date"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "10月",
+    "column_name": "审核.4",
+    "field_description": "字段名：审核.4，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：AAA, 非电机故障小时数, 风暴停机时间",
+    "column_type": "date"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "10月",
+    "column_name": "日期",
+    "field_description": "字段名：日期，类型：categorical，常见值：1.1月22日7时23分，20#-30#通讯中断，原因暂未查明., 100, 0，示例：2023.11.1, 电机可利用率%, 电机可利用率%",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "5月",
+    "column_name": "Unnamed: 0",
+    "field_description": "字段名：Unnamed: 0，类型：categorical，常见值：电机  编号, 统计值, 2#，示例：电机  编号, 电机  编号, 1#",
+    "column_type": "categorical"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "5月",
+    "column_name": "Unnamed: 1",
+    "field_description": "字段名：Unnamed: 1，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：发电量（kwh）, 本月, 113845",
+    "column_type": "date"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "5月",
+    "column_name": "Unnamed: 2",
+    "field_description": "字段名：Unnamed: 2，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：发电量（kwh）, 本年, 137597",
+    "column_type": "date"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "5月",
+    "column_name": "Unnamed: 3",
+    "field_description": "字段名：Unnamed: 3，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：发电小时数, 发电小时数, 371.57",
+    "column_type": "date"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "5月",
+    "column_name": "Unnamed: 4",
+    "field_description": "字段名：Unnamed: 4，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：电机正常运行时间, 电机正常运行时间, 604.35",
+    "column_type": "date"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "5月",
+    "column_name": "编制",
+    "field_description": "字段名：编制，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：BB, 电机故障小时数, 电机故障小时数",
+    "column_type": "date"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "5月",
+    "column_name": "审核",
+    "field_description": "字段名：审核，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：AAA, 电力有效小时数, 电力有效小时数",
+    "column_type": "date"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "5月",
+    "column_name": "审核.1",
+    "field_description": "字段名：审核.1，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：AAA, 非电机故障小时数, 服务时间",
+    "column_type": "date"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "5月",
+    "column_name": "审核.2",
+    "field_description": "字段名：审核.2，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：AAA, 非电机故障小时数, 服务时间",
+    "column_type": "date"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "5月",
+    "column_name": "审核.3",
+    "field_description": "字段名：审核.3，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：AAA, 非电机故障小时数, 人工停机时间",
+    "column_type": "date"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "5月",
+    "column_name": "审核.4",
+    "field_description": "字段名：审核.4，类型：date，范围：1970-01-01 至 1970-01-01，粒度：D，示例：AAA, 非电机故障小时数, 风暴停机时间",
+    "column_type": "date"
+  },
+  {
+    "file_name": "发电日志.xlsx",
+    "sheet_name": "5月",
+    "column_name": "日期",
+    "field_description": "字段名：日期，类型：categorical，常见值：100, 机器通讯中断，原因是通信损坏。, 0，示例：2023.11.1, 电机可利用率%, 电机可利用率%",
+    "column_type": "categorical"
+  }
+]

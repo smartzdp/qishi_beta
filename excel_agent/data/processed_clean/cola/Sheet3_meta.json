@@ -1,0 +1,55 @@
+{
+  "original_file": "cola.xlsx",
+  "sheet_name": "Sheet3",
+  "clean_excel_path": "data/processed_clean/cola/Sheet3.xlsx",
+  "shape": [
+    0,
+    0
+  ],
+  "columns": [],
+  "profile": {
+    "types": {},
+    "head10": [],
+    "tail5": [],
+    "distributions": {
+      "categorical": {},
+      "date": {},
+      "numeric": {}
+    }
+  },
+  "summary": {
+    "file_name": "cola.xlsx",
+    "sheet_name": "Sheet3",
+    "row_count": 0,
+    "column_count": 0,
+    "columns": [],
+    "types": {},
+    "profile": {
+      "types": {},
+      "head10": [],
+      "tail5": [],
+      "distributions": {
+        "categorical": {},
+        "date": {},
+        "numeric": {}
+      }
+    },
+    "field_descriptions": [],
+    "text_summary": "文件：cola.xlsx，工作表：Sheet3，行数：0，列数：0，字段：",
+    "original_file": "cola.xlsx",
+    "original_sheet_count": 3,
+    "all_sheets": [
+      "Sheet1",
+      "Sheet2",
+      "Sheet3"
+    ],
+    "clean_excel_path": "data/processed_clean/cola/Sheet3.xlsx",
+    "had_merged_cells": false
+  },
+  "original_sheet_count": 3,
+  "all_sheets": [
+    "Sheet1",
+    "Sheet2",
+    "Sheet3"
+  ]
+}
