@@ -186,7 +186,6 @@ export function connectSTT(onMessage = () => {}, onError = () => {}) {
   const ws = new WebSocket(`${API_CONFIG.WS_BASE_URL}${API_CONFIG.ENDPOINTS.STT}`);
 
   ws.onopen = () => {
-    console.log('STT WebSocket connected');
   };
 
   ws.onmessage = (event) => {
@@ -204,12 +203,13 @@ export function connectSTT(onMessage = () => {}, onError = () => {}) {
   };
 
   ws.onclose = () => {
-    console.log('STT WebSocket closed');
   };
 
   return {
     send: (data) => ws.send(data),
-    close: () => ws.close()
+    close: () => ws.close(),
+    readyState: ws.readyState,
+    ws: ws  // Expose the WebSocket for direct access
   };
 }
 
@@ -220,7 +220,6 @@ export function connectTTS(onAudio = () => {}, onError = () => {}) {
   const ws = new WebSocket(`${API_CONFIG.WS_BASE_URL}${API_CONFIG.ENDPOINTS.TTS}`);
 
   ws.onopen = () => {
-    console.log('TTS WebSocket connected');
   };
 
   ws.onmessage = (event) => {
@@ -232,7 +231,6 @@ export function connectTTS(onAudio = () => {}, onError = () => {}) {
       try {
         const data = JSON.parse(event.data);
         if (data.type === 'end') {
-          console.log('TTS stream ended');
         }
       } catch (e) {
         console.error('Failed to parse TTS message:', e);
@@ -246,7 +244,6 @@ export function connectTTS(onAudio = () => {}, onError = () => {}) {
   };
 
   ws.onclose = () => {
-    console.log('TTS WebSocket closed');
   };
 
   return {

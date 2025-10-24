@@ -114,8 +114,8 @@ export const EXAMPLE_QUESTIONS = [
 
 // Audio Configuration
 export const AUDIO_CONFIG = {
-  SAMPLE_RATE: 16000,
-  BUFFER_SIZE: 4096,
+  SAMPLE_RATE: 16000,  // Use 16kHz for browser compatibility, will resample to 24kHz
+  BUFFER_SIZE: 4096,   // ≈256 ms at 16 kHz
   CHANNELS: 1
 }
 

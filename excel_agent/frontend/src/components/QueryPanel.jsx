@@ -22,7 +22,6 @@ function QueryPanel({ onQueryStart, onQueryComplete, onStreamData, disabled }) {
     queryStream(question, {
       use_llm_codegen: true, // 始终使用AI生成代码
       onEvent: (eventType, data) => {
-        console.log('Event:', eventType, data)
         
         // Accumulate stream data
         streamDataRef.current[eventType] = data
@@ -42,8 +41,20 @@ function QueryPanel({ onQueryStart, onQueryComplete, onStreamData, disabled }) {
     if (isRecording) {
       // Stop recording
       if (sttRef.current) {
-        sttRef.current.close()
-        sttRef.current = null
+        // Send stop signal before closing
+        if (sttRef.current.ws && sttRef.current.ws.readyState === WebSocket.OPEN) {
+          sttRef.current.ws.send(JSON.stringify({ type: 'stop' }))
+          // Wait a bit for final transcription before closing
+          setTimeout(() => {
+            if (sttRef.current) {
+              sttRef.current.close()
+              sttRef.current = null
+            }
+          }, 3000) // Wait 3 seconds for final transcription
+        } else {
+          sttRef.current.close()
+          sttRef.current = null
+        }
       }
       setIsRecording(false)
     } else {
@@ -53,8 +64,18 @@ function QueryPanel({ onQueryStart, onQueryComplete, onStreamData, disabled }) {
       try {
         sttRef.current = connectSTT(
           (data) => {
-            if (data.type === 'partial_text' || data.type === 'final_text') {
-              setQuestion(prev => prev + ' ' + data.text)
+            if (data.type === 'partial_text') {
+              // Show partial text with indicator
+              setQuestion(prev => {
+                const cleanPrev = prev.replace(/\s*\[正在识别...\]\s*$/, '')
+                return cleanPrev + data.text + ' [正在识别...]'
+              })
+            } else if (data.type === 'final_text') {
+              // Final transcription - append to previous text
+              setQuestion(prev => {
+                const cleanPrev = prev.replace(/\s*\[正在识别...\]\s*$/, '')
+                return cleanPrev + (cleanPrev ? ' ' : '') + data.text
+              })
             }
           },
           (err) => {
@@ -64,10 +85,18 @@ function QueryPanel({ onQueryStart, onQueryComplete, onStreamData, disabled }) {
           }
         )
 
-        // Start capturing audio
-        navigator.mediaDevices.getUserMedia({ audio: true })
+        // Start capturing audio with basic configuration
+        navigator.mediaDevices.getUserMedia({ 
+          audio: {
+            sampleRate: AUDIO_CONFIG.SAMPLE_RATE,
+            channelCount: AUDIO_CONFIG.CHANNELS
+          }
+        })
           .then(stream => {
-            const audioContext = new AudioContext({ sampleRate: AUDIO_CONFIG.SAMPLE_RATE })
+            const audioContext = new AudioContext({ 
+              sampleRate: AUDIO_CONFIG.SAMPLE_RATE,
+              latencyHint: 'interactive'
+            })
             const source = audioContext.createMediaStreamSource(stream)
             const processor = audioContext.createScriptProcessor(AUDIO_CONFIG.BUFFER_SIZE, AUDIO_CONFIG.CHANNELS, AUDIO_CONFIG.CHANNELS)
 
@@ -76,14 +105,18 @@ function QueryPanel({ onQueryStart, onQueryComplete, onStreamData, disabled }) {
 
             processor.onaudioprocess = (e) => {
               const audioData = e.inputBuffer.getChannelData(0)
-              // Convert to 16-bit PCM
+
+              // Convert to 16-bit PCM with proper scaling
               const pcm16 = new Int16Array(audioData.length)
               for (let i = 0; i < audioData.length; i++) {
-                pcm16[i] = Math.max(-32768, Math.min(32767, audioData[i] * 32768))
+                // Apply proper scaling and clamping
+                const sample = Math.max(-1, Math.min(1, audioData[i]))
+                pcm16[i] = Math.round(sample * 32767)
               }
               
-              if (sttRef.current) {
-                sttRef.current.send(pcm16.buffer)
+              if (sttRef.current && sttRef.current.ws && sttRef.current.ws.readyState === WebSocket.OPEN) {
+                // Send as binary data (bytes)
+                sttRef.current.ws.send(pcm16.buffer)
               }
             }
           })
