@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单购物网站</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .product {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        .product h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .product p {
+            color: #666;
+            margin: 10px 0;
+        }
+        .price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        .btn {
+            background: #3498db;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #2980b9;
+        }
+        .btn-success {
+            background: #27ae60;
+        }
+        .btn-success:hover {
+            background: #229954;
+        }
+        .quantity-input {
+            width: 60px;
+            padding: 8px;
+            margin: 0 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .orders-section {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+        .order-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+        .order-status {
+            font-weight: bold;
+        }
+        .status-pending {
+            color: #f39c12;
+        }
+        .status-paid {
+            color: #27ae60;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛒 简单购物网站</h1>
+        
+        <div class="product">
+            <h3>📱 一次性购买产品</h3>
+            <p>这是一个一次性购买的产品</p>
+            <p class="price" id="one-time-price">加载中...</p>
+            <label for="quantity">数量: </label>
+            <input type="number" id="quantity" class="quantity-input" value="1" min="1" max="10">
+            <button class="btn" onclick="buyOneTime()">立即购买</button>
+        </div>
+
+        <div class="product">
+            <h3>🔄 月度订阅</h3>
+            <p>这是一个月度订阅产品</p>
+            <p class="price" id="monthly-price">加载中...</p>
+            <label for="trial-days">试用天数: </label>
+            <input type="number" id="trial-days" class="quantity-input" value="0" min="0" max="30">
+            <button class="btn btn-success" onclick="subscribe()">开始订阅</button>
+        </div>
+
+        <div class="orders-section">
+            <h3>📋 订单列表</h3>
+            <button class="btn" onclick="loadOrders()">刷新订单</button>
+            <div id="orders-list">
+                <p>点击"刷新订单"查看订单状态</p>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <p>处理中，请稍候...</p>
+        </div>
+    </div>
+
+    <script>
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        async function buyOneTime() {
+            const quantity = document.getElementById('quantity').value;
+            showLoading();
+            
+            try {
+                const response = await fetch('/api/checkout/one-time', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        quantity: parseInt(quantity)
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.url) {
+                    // 跳转到Stripe支付页面
+                    window.location.href = data.url;
+                } else {
+                    alert('创建支付链接失败');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('请求失败: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function subscribe() {
+            const trialDays = document.getElementById('trial-days').value;
+            showLoading();
+            
+            try {
+                const response = await fetch('/api/checkout/subscribe', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        trial_days: parseInt(trialDays)
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.url) {
+                    // 跳转到Stripe支付页面
+                    window.location.href = data.url;
+                } else {
+                    alert('创建订阅链接失败');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('请求失败: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function loadOrders() {
+            try {
+                const response = await fetch('/api/orders');
+                const orders = await response.json();
+                
+                const ordersList = document.getElementById('orders-list');
+                if (orders.length === 0) {
+                    ordersList.innerHTML = '<p>暂无订单</p>';
+                    return;
+                }
+                
+                let html = '';
+                orders.forEach(order => {
+                    const statusClass = order.status === 'paid' ? 'status-paid' : 'status-pending';
+                    const statusText = order.status === 'paid' ? '已支付' : '待支付';
+                    const typeText = order.type === 'one_time' ? '一次性购买' : '订阅';
+                    
+                    html += `
+                        <div class="order-item">
+                            <p><strong>订单ID:</strong> ${order.id}</p>
+                            <p><strong>类型:</strong> ${typeText}</p>
+                            <p><strong>状态:</strong> <span class="order-status ${statusClass}">${statusText}</span></p>
+                            <p><strong>支付状态:</strong> ${order.payment_status}</p>
+                            ${order.quantity ? `<p><strong>数量:</strong> ${order.quantity}</p>` : ''}
+                            ${order.trial_days ? `<p><strong>试用天数:</strong> ${order.trial_days}</p>` : ''}
+                        </div>
+                    `;
+                });
+                
+                ordersList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                document.getElementById('orders-list').innerHTML = '<p>加载订单失败</p>';
+            }
+        }
+
+        // 加载价格信息
+        async function loadPrices() {
+            try {
+                const response = await fetch('/api/prices');
+                const prices = await response.json();
+                
+                if (prices.one_time) {
+                    document.getElementById('one-time-price').textContent = 
+                        `$${prices.one_time.amount.toFixed(2)} ${prices.one_time.currency}`;
+                }
+                
+                if (prices.monthly) {
+                    document.getElementById('monthly-price').textContent = 
+                        `$${prices.monthly.amount.toFixed(2)} ${prices.monthly.currency}/${prices.monthly.interval}`;
+                }
+            } catch (error) {
+                console.error('加载价格失败:', error);
+                document.getElementById('one-time-price').textContent = '价格加载失败';
+                document.getElementById('monthly-price').textContent = '价格加载失败';
+            }
+        }
+
+        // 页面加载时自动加载订单和价格
+        window.onload = function() {
+            loadOrders();
+            loadPrices();
+        };
+    </script>
+</body>
+</html>
