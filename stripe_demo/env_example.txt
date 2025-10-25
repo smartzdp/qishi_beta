@@ -1,0 +1,8 @@
+# Stripe配置示例
+# 请替换为您的实际密钥
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
+PRICE_ONE_TIME=price_your_one_time_price_id_here
+PRICE_SUB_MONTHLY=price_your_monthly_subscription_price_id_here
+DOMAIN=http://localhost:5001
+DEFAULT_EMAIL=your-email@example.com
