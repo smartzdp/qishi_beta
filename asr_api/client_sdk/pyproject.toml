@@ -1,0 +1,51 @@
+# 构建系统配置
+# 指定用于构建此包的构建后端和所需依赖
+[build-system]
+# 构建工具所需的依赖包，hatchling 是一个现代的 Python 打包工具
+requires = ["hatchling>=1.21.1"]
+# 指定使用的构建后端，hatchling.build 是 hatchling 提供的构建后端
+build-backend = "hatchling.build"
+
+# 项目元数据配置
+# 定义包的名称、版本、描述等基本信息
+[project]
+# 包名称，用于在 PyPI 上发布和安装时的标识
+name = "whisper-asr-client"
+# 包版本号，遵循语义化版本规范
+version = "0.1.0"
+# 包的简短描述，会显示在 PyPI 上
+description = "Python client SDK for Whisper ASR Service"
+# README 文件路径，用于在 PyPI 上显示详细的包说明
+readme = "README.md"
+# Python 版本要求，指定最低支持的 Python 版本
+requires-python = ">=3.8"
+# 许可证文件路径（可选）
+# license = { file = "LICENSE" }
+# 作者信息列表
+authors = [
+    { name = "Whisper ASR Team", email = "asr@example.com" }
+]
+# 关键词列表，用于在 PyPI 上搜索和分类
+keywords = ["whisper", "asr", "speech-recognition", "api", "client"]
+# 分类器列表，用于描述包的属性（Python 版本、许可证、操作系统等）
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+# 运行时依赖项列表，安装此包时会自动安装这些依赖
+dependencies = [
+    "requests>=2.28.0"
+]
+
+# Hatchling 构建工具配置
+# 配置 wheel 包的构建选项
+[tool.hatch.build.targets.wheel]
+# 指定要包含在包中的 Python 包路径（使用 src 布局）
+packages = ["src/whisper_asr_client"]
+

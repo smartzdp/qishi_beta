@@ -1,0 +1,17 @@
+Flask
+Flask-JWT-Extended
+Flask-SQLAlchemy
+python-dotenv
+bcrypt
+marshmallow
+marshmallow-sqlalchemy
+openai-whisper
+torch
+torchaudio
+numpy
+requests
+certifi
+pytest
+pytest-flask
+requests-mock
+soundfile
