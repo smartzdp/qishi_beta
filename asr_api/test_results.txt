@@ -1,0 +1,168 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.13.7, pytest-9.0.1, pluggy-1.6.0 -- /Users/hannahjiang/Desktop/depei.zhang/genai_class/qishi_beta/asr_api/venv/bin/python3.13
+cachedir: .pytest_cache
+rootdir: /Users/hannahjiang/Desktop/depei.zhang/genai_class/qishi_beta/asr_api
+plugins: flask-1.3.0, requests-mock-1.12.1
+collecting ... collected 20 items
+
+tests/test_asr_api.py::test_create_model PASSED                          [  5%]
+tests/test_asr_api.py::test_create_model_unauthorized PASSED             [ 10%]
+tests/test_asr_api.py::test_delete_model PASSED                          [ 15%]
+tests/test_asr_api.py::test_delete_nonexistent_model PASSED              [ 20%]
+tests/test_asr_api.py::test_list_models PASSED                           [ 25%]
+tests/test_asr_api.py::test_transcribe_invalid_instance PASSED           [ 30%]
+tests/test_auth.py::test_register PASSED                                 [ 35%]
+tests/test_auth.py::test_register_duplicate_username PASSED              [ 40%]
+tests/test_auth.py::test_login PASSED                                    [ 45%]
+tests/test_auth.py::test_login_invalid_credentials PASSED                [ 50%]
+tests/test_auth.py::test_login_nonexistent_user PASSED                   [ 55%]
+tests/test_model_manager.py::test_model_manager_singleton PASSED         [ 60%]
+tests/test_model_manager.py::test_create_model PASSED                    [ 65%]
+tests/test_model_manager.py::test_delete_model PASSED                    [ 70%]
+tests/test_model_manager.py::test_delete_nonexistent_model PASSED        [ 75%]
+tests/test_model_manager.py::test_list_models PASSED                     [ 80%]
+tests/test_model_manager.py::test_transcribe_mock PASSED                 [ 85%]
+tests/test_rate_limit.py::test_rate_limit_headers PASSED                 [ 90%]
+tests/test_rate_limit.py::test_rate_limit_exceeded PASSED                [ 95%]
+tests/test_rate_limit.py::test_rate_limit_reset PASSED                   [100%]
+
+=============================== warnings summary ===============================
+tests/test_asr_api.py: 18 warnings
+tests/test_auth.py: 6 warnings
+tests/test_rate_limit.py: 6 warnings
+  /Users/hannahjiang/Desktop/depei.zhang/genai_class/qishi_beta/asr_api/venv/lib/python3.13/site-packages/sqlalchemy/sql/schema.py:3624: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 20 passed, 30 warnings in 8.53s ========================
+=== Running Client SDK Tests ===
+
+============================= test session starts ==============================
+platform darwin -- Python 3.13.7, pytest-9.0.1, pluggy-1.6.0 -- /Users/hannahjiang/Desktop/depei.zhang/genai_class/qishi_beta/asr_api/venv/bin/python3.13
+cachedir: .pytest_cache
+rootdir: /Users/hannahjiang/Desktop/depei.zhang/genai_class/qishi_beta/asr_api/client_sdk
+configfile: pyproject.toml
+plugins: flask-1.3.0, requests-mock-1.12.1
+collecting ... collected 12 items
+
+client_sdk/tests/test_client_basic.py::test_client_init PASSED           [  8%]
+client_sdk/tests/test_client_basic.py::test_login_success PASSED         [ 16%]
+client_sdk/tests/test_client_basic.py::test_login_failure PASSED         [ 25%]
+client_sdk/tests/test_client_basic.py::test_register PASSED              [ 33%]
+client_sdk/tests/test_client_basic.py::test_create_model PASSED          [ 41%]
+client_sdk/tests/test_client_basic.py::test_create_model_unauthorized PASSED [ 50%]
+client_sdk/tests/test_client_basic.py::test_delete_model PASSED          [ 58%]
+client_sdk/tests/test_client_basic.py::test_transcribe_base64 PASSED     [ 66%]
+client_sdk/tests/test_client_basic.py::test_file_to_base64 PASSED        [ 75%]
+client_sdk/tests/test_client_basic.py::test_rate_limit_error PASSED      [ 83%]
+client_sdk/tests/test_client_basic.py::test_not_found_error PASSED       [ 91%]
+client_sdk/tests/test_client_basic.py::test_list_models PASSED           [100%]
+
+============================== 12 passed in 0.03s ==============================
+
+=== Test Summary ===
+
+=== COMPLETE TEST SUMMARY ===
+
+Backend Tests (tests/):
+- test_asr_api.py: 6 tests - ALL PASSED
+  ✓ test_create_model
+  ✓ test_create_model_unauthorized
+  ✓ test_delete_model
+  ✓ test_delete_nonexistent_model
+  ✓ test_list_models
+  ✓ test_transcribe_invalid_instance
+
+- test_auth.py: 5 tests - ALL PASSED
+  ✓ test_register
+  ✓ test_register_duplicate_username
+  ✓ test_login
+  ✓ test_login_invalid_credentials
+  ✓ test_login_nonexistent_user
+
+- test_model_manager.py: 6 tests - ALL PASSED
+  ✓ test_model_manager_singleton
+  ✓ test_create_model
+  ✓ test_delete_model
+  ✓ test_delete_nonexistent_model
+  ✓ test_list_models
+  ✓ test_transcribe_mock
+
+- test_rate_limit.py: 3 tests - ALL PASSED
+  ✓ test_rate_limit_headers
+  ✓ test_rate_limit_exceeded
+  ✓ test_rate_limit_reset
+
+Client SDK Tests (client_sdk/tests/):
+- test_client_basic.py: 12 tests - ALL PASSED
+  ✓ test_client_init
+  ✓ test_login_success
+  ✓ test_login_failure
+  ✓ test_register
+  ✓ test_create_model
+  ✓ test_create_model_unauthorized
+  ✓ test_delete_model
+  ✓ test_transcribe_base64
+  ✓ test_file_to_base64
+  ✓ test_rate_limit_error
+  ✓ test_not_found_error
+  ✓ test_list_models
+
+TOTAL: 32 tests - ALL PASSED ✓
+
+Test Date: $(date)
+Python Version: $(python --version)
+pytest Version: $(pytest --version | head -1)
+
+
+=== COMPLETE TEST SUMMARY ===
+
+Backend Tests (tests/):
+- test_asr_api.py: 6 tests - ALL PASSED
+  ✓ test_create_model
+  ✓ test_create_model_unauthorized
+  ✓ test_delete_model
+  ✓ test_delete_nonexistent_model
+  ✓ test_list_models
+  ✓ test_transcribe_invalid_instance
+
+- test_auth.py: 5 tests - ALL PASSED
+  ✓ test_register
+  ✓ test_register_duplicate_username
+  ✓ test_login
+  ✓ test_login_invalid_credentials
+  ✓ test_login_nonexistent_user
+
+- test_model_manager.py: 6 tests - ALL PASSED
+  ✓ test_model_manager_singleton
+  ✓ test_create_model
+  ✓ test_delete_model
+  ✓ test_delete_nonexistent_model
+  ✓ test_list_models
+  ✓ test_transcribe_mock
+
+- test_rate_limit.py: 3 tests - ALL PASSED
+  ✓ test_rate_limit_headers
+  ✓ test_rate_limit_exceeded
+  ✓ test_rate_limit_reset
+
+Client SDK Tests (client_sdk/tests/):
+- test_client_basic.py: 12 tests - ALL PASSED
+  ✓ test_client_init
+  ✓ test_login_success
+  ✓ test_login_failure
+  ✓ test_register
+  ✓ test_create_model
+  ✓ test_create_model_unauthorized
+  ✓ test_delete_model
+  ✓ test_transcribe_base64
+  ✓ test_file_to_base64
+  ✓ test_rate_limit_error
+  ✓ test_not_found_error
+  ✓ test_list_models
+
+TOTAL: 32 tests - ALL PASSED ✓
+
+Test Date: 2025-11-13 10:40:59
+Python Version: Python 3.13.7
+pytest Version: pytest 9.0.1
