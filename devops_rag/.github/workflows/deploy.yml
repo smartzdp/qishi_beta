@@ -1,0 +1,99 @@
+name: Deploy RAG App to AWS App Runner
+
+# 触发器：当推送到 main 分支时
+on:
+  push:
+    branches:
+      - main
+
+# 环境变量：从 GitHub Secrets 读取
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+  AWS_IAM_ROLE_TO_ASSUME: ${{ secrets.AWS_IAM_ROLE_TO_ASSUME }}
+
+# 权限：允许 workflow 从 OIDC 获取身份 token
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-deploy:
+    name: Build, Push to ECR, and Deploy to App Runner
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 检出代码
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Configure AWS Credentials：使用 OIDC 角色登录
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_IAM_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # 3. Log in to ECR：登录 ECR
+      - name: Log in to ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # 4. Build and push Docker image：构建镜像并推送到 ECR（使用 GitHub SHA 作为 Tag）
+      - name: Build and push Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      # 5. 部署 (重点)：必须使用 awslabs/amazon-app-runner-deploy@main Action，并传入动态获取的角色 ARNs
+      - name: Fetch App Runner role ARNs (if service exists)
+        id: fetch-roles
+        continue-on-error: true
+        run: |
+          SERVICE_ARN=$(aws apprunner list-services \
+            --region "${{ env.AWS_REGION }}" \
+            --query "ServiceSummaryList[?ServiceName=='rag-app'].ServiceArn" \
+            --output text)
+          
+          if [ ! -z "$SERVICE_ARN" ] && [ "$SERVICE_ARN" != "None" ]; then
+            ACCESS_ROLE_ARN=$(aws apprunner describe-service \
+              --region "${{ env.AWS_REGION }}" \
+              --service-arn "$SERVICE_ARN" \
+              --query 'Service.SourceConfiguration.AuthenticationConfiguration.AccessRoleArn' \
+              --output text)
+            
+            INSTANCE_ROLE_ARN=$(aws apprunner describe-service \
+              --region "${{ env.AWS_REGION }}" \
+              --service-arn "$SERVICE_ARN" \
+              --query 'Service.InstanceConfiguration.InstanceRoleArn' \
+              --output text)
+            
+            echo "ACCESS_ROLE_ARN=$ACCESS_ROLE_ARN" >> $GITHUB_ENV
+            echo "INSTANCE_ROLE_ARN=$INSTANCE_ROLE_ARN" >> $GITHUB_ENV
+            echo "SERVICE_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "SERVICE_EXISTS=false" >> $GITHUB_ENV
+            # Use role ARNs from secrets for first deployment
+            echo "ACCESS_ROLE_ARN=${{ secrets.ACCESS_ROLE_ARN }}" >> $GITHUB_ENV
+            echo "INSTANCE_ROLE_ARN=${{ secrets.INSTANCE_ROLE_ARN }}" >> $GITHUB_ENV
+          fi
+
+      - name: Deploy to App Runner
+        uses: awslabs/amazon-app-runner-deploy@main
+        with:
+          service: rag-app
+          image: ${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+          region: ${{ env.AWS_REGION }}
+          access-role-arn: ${{ env.ACCESS_ROLE_ARN }}
+          instance-role-arn: ${{ env.INSTANCE_ROLE_ARN }}
+          port: 8080
+          cpu: 1
+          memory: 2
+          wait-for-service-stability-seconds: 600
+
+      - name: Deployment Complete
+        run: echo "✅ Deployment to App Runner successful!"
+

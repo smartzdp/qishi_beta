@@ -1,0 +1,14 @@
+# Environment variables
+.env
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.tfstate.lock.info
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
