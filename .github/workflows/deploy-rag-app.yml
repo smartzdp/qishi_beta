@@ -62,7 +62,7 @@ jobs:
         run: |
           SERVICE_ARN=$(aws apprunner list-services \
             --region "${{ env.AWS_REGION }}" \
-            --query "ServiceSummaryList[?ServiceName=='rag-app'].ServiceArn" \
+            --query "ServiceSummaryList[?ServiceName=='rag-app-1'].ServiceArn" \
             --output text)
           
           if [ ! -z "$SERVICE_ARN" ] && [ "$SERVICE_ARN" != "None" ]; then
@@ -97,7 +97,7 @@ jobs:
         run: |
           SERVICE_ARN=$(aws apprunner list-services \
             --region "${{ env.AWS_REGION }}" \
-            --query "ServiceSummaryList[?ServiceName=='rag-app'].ServiceArn" \
+            --query "ServiceSummaryList[?ServiceName=='rag-app-1'].ServiceArn" \
             --output text)
           
           # If service exists, check its status
@@ -178,7 +178,7 @@ jobs:
           if [ -z "$SERVICE_ARN" ] || [ "$SERVICE_ARN" == "None" ]; then
             echo "Creating new App Runner service..."
             aws apprunner create-service \
-              --service-name rag-app \
+              --service-name rag-app-1 \
               --region "${{ env.AWS_REGION }}" \
               --source-configuration '{
                 "ImageRepository": {

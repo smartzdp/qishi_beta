@@ -217,7 +217,7 @@ resource "aws_iam_role_policy" "apprunner_secrets" {
 # App Runner 服务
 resource "aws_apprunner_service" "rag_app_service" {
   count = var.manage_apprunner_via_terraform ? 1 : 0
-  service_name = "rag-app"
+  service_name = "rag-app-1"
   
   source_configuration {
     authentication_configuration {
@@ -243,7 +243,7 @@ resource "aws_apprunner_service" "rag_app_service" {
   
   health_check_configuration {
     protocol            = "TCP"
-    interval            = 30
+    interval            = 20
     timeout             = 20
     healthy_threshold   = 1
     unhealthy_threshold = 5
