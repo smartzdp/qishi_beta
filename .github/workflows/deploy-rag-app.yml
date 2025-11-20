@@ -132,29 +132,27 @@ jobs:
                 echo "[$i] Waiting for deletion... ($DELETE_STATUS)"
                 sleep 15
               done
-            # If in progress, wait for it to complete
+            # If in progress, delete it to start fresh
             elif [ "$STATUS" = "OPERATION_IN_PROGRESS" ]; then
-              echo "Service is still deploying, waiting for it to complete..."
-              for i in {1..40}; do
-                CURRENT_STATUS=$(aws apprunner describe-service \
+              echo "Service is still deploying, deleting to start fresh..."
+              aws apprunner delete-service \
+                --service-arn "$SERVICE_ARN" \
+                --region "${{ env.AWS_REGION }}"
+              
+              echo "Waiting for deletion to complete..."
+              for i in {1..20}; do
+                DELETE_STATUS=$(aws apprunner describe-service \
                   --service-arn "$SERVICE_ARN" \
                   --region "${{ env.AWS_REGION }}" \
                   --query 'Service.Status' \
-                  --output text)
-                echo "[$i] Status: $CURRENT_STATUS"
-                if [ "$CURRENT_STATUS" = "RUNNING" ]; then
-                  echo "✅ Service is RUNNING!"
-                  break
-                elif [ "$CURRENT_STATUS" = "CREATE_FAILED" ] || [ "$CURRENT_STATUS" = "UPDATE_FAILED" ]; then
-                  echo "❌ Service failed, will delete and recreate"
-                  aws apprunner delete-service \
-                    --service-arn "$SERVICE_ARN" \
-                    --region "${{ env.AWS_REGION }}"
+                  --output text 2>/dev/null || echo "DELETED")
+                if [ "$DELETE_STATUS" = "DELETED" ] || [ -z "$DELETE_STATUS" ]; then
+                  echo "Service deleted"
                   SERVICE_ARN=""
-                  sleep 30
                   break
                 fi
-                sleep 30
+                echo "[$i] Waiting for deletion... ($DELETE_STATUS)"
+                sleep 15
               done
             fi
           fi
