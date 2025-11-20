@@ -159,11 +159,6 @@ jobs:
               }'
           fi
           
-          echo "Waiting for service to be stable..."
-          aws apprunner wait service-updated \
-            --service-arn "$SERVICE_ARN" \
-            --region "${{ env.AWS_REGION }}" || true
-          
           # Wait for RUNNING state
           echo "Waiting for service to reach RUNNING state..."
           for i in {1..40}; do
