@@ -64,7 +64,7 @@ class Query(BaseModel):
 
 @app.get("/")
 def read_root():
-    return {"message": "RAG Application is live!", "version": "v1"}
+    return {"message": "RAG Application is live!", "version": "v1.0"}
 
 @app.post("/chat")
 def chat(query: Query):
