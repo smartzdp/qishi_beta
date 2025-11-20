@@ -231,7 +231,7 @@ jobs:
                 "Cpu": "1024",
                 "Memory": "2048",
                 "InstanceRoleArn": "'${{ env.INSTANCE_ROLE_ARN }}'"
-              }'
+              }' \
           fi
           
           # Wait for RUNNING state

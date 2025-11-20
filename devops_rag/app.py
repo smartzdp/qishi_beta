@@ -1,11 +1,22 @@
 import os
-from fastapi import FastAPI
-from pydantic import BaseModel
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough
-from langchain_core.output_parsers import StrOutputParser
-from langchain_community.vectorstores import FAISS
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+import sys
+
+print("🚀 Starting RAG Application...")
+print(f"Python version: {sys.version}")
+print(f"Working directory: {os.getcwd()}")
+
+try:
+    from fastapi import FastAPI
+    from pydantic import BaseModel
+    from langchain_core.prompts import ChatPromptTemplate
+    from langchain_core.runnables import RunnablePassthrough
+    from langchain_core.output_parsers import StrOutputParser
+    from langchain_community.vectorstores import FAISS
+    from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+    print("✅ All imports successful")
+except Exception as e:
+    print(f"❌ Import error: {e}")
+    raise
 
 # 1. Check API Key - warn if not set but don't fail immediately
 # In AWS App Runner, this will be injected by AWS Secrets Manager
@@ -59,12 +70,22 @@ Helpful Answer: """
 
 app = FastAPI()
 
+@app.on_event("startup")
+async def startup_event():
+    print("✅ FastAPI application started successfully")
+    print(f"✅ Server will listen on port 8080")
+
 class Query(BaseModel):
     question: str
 
 @app.get("/")
 def read_root():
     return {"message": "RAG Application is live!", "version": "v1.0"}
+
+@app.get("/health")
+def health_check():
+    """Simple health check endpoint that doesn't require RAG chain"""
+    return {"status": "healthy", "service": "rag-app"}
 
 @app.post("/chat")
 def chat(query: Query):

@@ -8,9 +8,12 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 4. 复制所有代码和数据
-# 关键: 这一步会把 app.py, data.txt 和 faiss_index 文件夹都复制进去
-COPY . .
+# 4. 复制应用代码和 FAISS 索引
+# 关键: faiss_index 文件夹必须预先在本地通过 ingest.py 生成
+# 此步骤会将 app.py 和 faiss_index/ 文件夹都复制到镜像中
+COPY app.py .
+COPY faiss_index/ ./faiss_index/
+COPY data.txt .
 
 # 4.5 构建 FAISS 索引 (如果还不存在)
 # RUN python ingest.py

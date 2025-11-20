@@ -240,6 +240,14 @@ resource "aws_apprunner_service" "rag_app_service" {
     memory = "2048" # 2 GB
     instance_role_arn = aws_iam_role.apprunner_instance_role.arn
   }
+  
+  health_check_configuration {
+    protocol            = "TCP"
+    interval            = 30
+    timeout             = 20
+    healthy_threshold   = 1
+    unhealthy_threshold = 5
+  }
 }
 
 # 为 App Runner 服务角色授予 ECR 读取权限
