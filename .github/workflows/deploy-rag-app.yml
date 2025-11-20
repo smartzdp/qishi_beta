@@ -88,6 +88,11 @@ jobs:
             echo "INSTANCE_ROLE_ARN=${{ secrets.INSTANCE_ROLE_ARN }}" >> $GITHUB_ENV
           fi
 
+      - name: Get Secrets Manager ARN
+        run: |
+          SECRET_ARN=$(aws secretsmanager describe-secret --secret-id rag-app-openai-key --region ${{ env.AWS_REGION }} --query 'ARN' --output text)
+          echo "SECRET_ARN=$SECRET_ARN" >> $GITHUB_ENV
+
       - name: Deploy to App Runner
         uses: awslabs/amazon-app-runner-deploy@main
         with:
@@ -96,10 +101,11 @@ jobs:
           region: ${{ env.AWS_REGION }}
           access-role-arn: ${{ env.ACCESS_ROLE_ARN }}
           instance-role-arn: ${{ env.INSTANCE_ROLE_ARN }}
+          runtime-environment-secrets: OPENAI_API_KEY=${{ env.SECRET_ARN }}
           port: 8080
           cpu: 1
           memory: 2
-          wait-for-service-stability-seconds: 600
+          wait-for-service-stability-seconds: 1200
 
       - name: Deployment Complete
         run: echo "✅ Deployment to App Runner successful!"
