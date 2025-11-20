@@ -1,10 +1,13 @@
 name: Deploy RAG App to AWS App Runner
 
-# 触发器：当推送到 main 分支时
+# 触发器：当推送到 main 分支且 devops_rag 文件夹有变化时
 on:
   push:
     branches:
       - main
+    paths:
+      - 'devops_rag/**'
+      - '.github/workflows/deploy-rag-app.yml'
 
 # 环境变量：从 GitHub Secrets 读取
 env:
