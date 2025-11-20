@@ -100,6 +100,65 @@ jobs:
             --query "ServiceSummaryList[?ServiceName=='rag-app'].ServiceArn" \
             --output text)
           
+          # If service exists, check its status
+          if [ ! -z "$SERVICE_ARN" ] && [ "$SERVICE_ARN" != "None" ]; then
+            STATUS=$(aws apprunner describe-service \
+              --service-arn "$SERVICE_ARN" \
+              --region "${{ env.AWS_REGION }}" \
+              --query 'Service.Status' \
+              --output text)
+            
+            echo "Found existing service with status: $STATUS"
+            
+            # If failed, delete it
+            if [ "$STATUS" = "CREATE_FAILED" ] || [ "$STATUS" = "UPDATE_FAILED" ]; then
+              echo "Service is in failed state, deleting..."
+              aws apprunner delete-service \
+                --service-arn "$SERVICE_ARN" \
+                --region "${{ env.AWS_REGION }}"
+              
+              echo "Waiting for deletion to complete..."
+              for i in {1..20}; do
+                DELETE_STATUS=$(aws apprunner describe-service \
+                  --service-arn "$SERVICE_ARN" \
+                  --region "${{ env.AWS_REGION }}" \
+                  --query 'Service.Status' \
+                  --output text 2>/dev/null || echo "DELETED")
+                if [ "$DELETE_STATUS" = "DELETED" ] || [ -z "$DELETE_STATUS" ]; then
+                  echo "Service deleted"
+                  SERVICE_ARN=""
+                  break
+                fi
+                echo "[$i] Waiting for deletion... ($DELETE_STATUS)"
+                sleep 15
+              done
+            # If in progress, wait for it to complete
+            elif [ "$STATUS" = "OPERATION_IN_PROGRESS" ]; then
+              echo "Service is still deploying, waiting for it to complete..."
+              for i in {1..40}; do
+                CURRENT_STATUS=$(aws apprunner describe-service \
+                  --service-arn "$SERVICE_ARN" \
+                  --region "${{ env.AWS_REGION }}" \
+                  --query 'Service.Status' \
+                  --output text)
+                echo "[$i] Status: $CURRENT_STATUS"
+                if [ "$CURRENT_STATUS" = "RUNNING" ]; then
+                  echo "✅ Service is RUNNING!"
+                  break
+                elif [ "$CURRENT_STATUS" = "CREATE_FAILED" ] || [ "$CURRENT_STATUS" = "UPDATE_FAILED" ]; then
+                  echo "❌ Service failed, will delete and recreate"
+                  aws apprunner delete-service \
+                    --service-arn "$SERVICE_ARN" \
+                    --region "${{ env.AWS_REGION }}"
+                  SERVICE_ARN=""
+                  sleep 30
+                  break
+                fi
+                sleep 30
+              done
+            fi
+          fi
+          
           if [ -z "$SERVICE_ARN" ] || [ "$SERVICE_ARN" == "None" ]; then
             echo "Creating new App Runner service..."
             aws apprunner create-service \
