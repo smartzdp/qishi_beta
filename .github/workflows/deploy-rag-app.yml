@@ -93,19 +93,95 @@ jobs:
           SECRET_ARN=$(aws secretsmanager describe-secret --secret-id rag-app-openai-key --region ${{ env.AWS_REGION }} --query 'ARN' --output text)
           echo "SECRET_ARN=$SECRET_ARN" >> $GITHUB_ENV
 
-      - name: Deploy to App Runner
-        uses: awslabs/amazon-app-runner-deploy@main
-        with:
-          service: rag-app
-          image: ${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
-          region: ${{ env.AWS_REGION }}
-          access-role-arn: ${{ env.ACCESS_ROLE_ARN }}
-          instance-role-arn: ${{ env.INSTANCE_ROLE_ARN }}
-          runtime-environment-secrets: OPENAI_API_KEY=${{ env.SECRET_ARN }}
-          port: 8080
-          cpu: 1
-          memory: 2
-          wait-for-service-stability-seconds: 1200
+      - name: Deploy to App Runner (create or update)
+        run: |
+          SERVICE_ARN=$(aws apprunner list-services \
+            --region "${{ env.AWS_REGION }}" \
+            --query "ServiceSummaryList[?ServiceName=='rag-app'].ServiceArn" \
+            --output text)
+          
+          if [ -z "$SERVICE_ARN" ] || [ "$SERVICE_ARN" == "None" ]; then
+            echo "Creating new App Runner service..."
+            aws apprunner create-service \
+              --service-name rag-app \
+              --region "${{ env.AWS_REGION }}" \
+              --source-configuration '{
+                "ImageRepository": {
+                  "ImageIdentifier": "'${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}'",
+                  "ImageRepositoryType": "ECR",
+                  "ImageConfiguration": {
+                    "Port": "8080",
+                    "RuntimeEnvironmentSecrets": {
+                      "OPENAI_API_KEY": "'${{ env.SECRET_ARN }}'"
+                    }
+                  }
+                },
+                "AuthenticationConfiguration": {
+                  "AccessRoleArn": "'${{ env.ACCESS_ROLE_ARN }}'"
+                },
+                "AutoDeploymentsEnabled": false
+              }' \
+              --instance-configuration '{
+                "Cpu": "1024",
+                "Memory": "2048",
+                "InstanceRoleArn": "'${{ env.INSTANCE_ROLE_ARN }}'"
+              }' \
+              --query 'Service.ServiceArn' \
+              --output text > service_arn.txt
+            
+            SERVICE_ARN=$(cat service_arn.txt)
+            echo "Created service: $SERVICE_ARN"
+          else
+            echo "Updating existing service: $SERVICE_ARN"
+            aws apprunner update-service \
+              --service-arn "$SERVICE_ARN" \
+              --region "${{ env.AWS_REGION }}" \
+              --source-configuration '{
+                "ImageRepository": {
+                  "ImageIdentifier": "'${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}'",
+                  "ImageRepositoryType": "ECR",
+                  "ImageConfiguration": {
+                    "Port": "8080",
+                    "RuntimeEnvironmentSecrets": {
+                      "OPENAI_API_KEY": "'${{ env.SECRET_ARN }}'"
+                    }
+                  }
+                },
+                "AuthenticationConfiguration": {
+                  "AccessRoleArn": "'${{ env.ACCESS_ROLE_ARN }}'"
+                },
+                "AutoDeploymentsEnabled": false
+              }' \
+              --instance-configuration '{
+                "Cpu": "1024",
+                "Memory": "2048",
+                "InstanceRoleArn": "'${{ env.INSTANCE_ROLE_ARN }}'"
+              }'
+          fi
+          
+          echo "Waiting for service to be stable..."
+          aws apprunner wait service-updated \
+            --service-arn "$SERVICE_ARN" \
+            --region "${{ env.AWS_REGION }}" || true
+          
+          # Wait for RUNNING state
+          echo "Waiting for service to reach RUNNING state..."
+          for i in {1..40}; do
+            STATUS=$(aws apprunner describe-service \
+              --service-arn "$SERVICE_ARN" \
+              --region "${{ env.AWS_REGION }}" \
+              --query 'Service.Status' \
+              --output text)
+            echo "[$i] Status: $STATUS"
+            if [ "$STATUS" = "RUNNING" ]; then
+              echo "✅ Service is RUNNING!"
+              break
+            elif [ "$STATUS" = "CREATE_FAILED" ] || [ "$STATUS" = "UPDATE_FAILED" ]; then
+              echo "❌ Service failed"
+              exit 1
+            fi
+            sleep 30
+          done
 
       - name: Deployment Complete
         run: echo "✅ Deployment to App Runner successful!"
