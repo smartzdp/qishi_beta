@@ -132,27 +132,45 @@ jobs:
                 echo "[$i] Waiting for deletion... ($DELETE_STATUS)"
                 sleep 15
               done
-            # If in progress, delete it to start fresh
+            # If in progress, wait for it to complete, then delete if failed
             elif [ "$STATUS" = "OPERATION_IN_PROGRESS" ]; then
-              echo "Service is still deploying, deleting to start fresh..."
-              aws apprunner delete-service \
-                --service-arn "$SERVICE_ARN" \
-                --region "${{ env.AWS_REGION }}"
-              
-              echo "Waiting for deletion to complete..."
-              for i in {1..20}; do
-                DELETE_STATUS=$(aws apprunner describe-service \
+              echo "Service is still deploying, waiting for operation to complete..."
+              for i in {1..40}; do
+                CURRENT_STATUS=$(aws apprunner describe-service \
                   --service-arn "$SERVICE_ARN" \
                   --region "${{ env.AWS_REGION }}" \
                   --query 'Service.Status' \
-                  --output text 2>/dev/null || echo "DELETED")
-                if [ "$DELETE_STATUS" = "DELETED" ] || [ -z "$DELETE_STATUS" ]; then
-                  echo "Service deleted"
-                  SERVICE_ARN=""
+                  --output text)
+                echo "[$i] Status: $CURRENT_STATUS"
+                if [ "$CURRENT_STATUS" = "RUNNING" ]; then
+                  echo "✅ Service is RUNNING! Will update it."
+                  break
+                elif [ "$CURRENT_STATUS" = "CREATE_FAILED" ] || [ "$CURRENT_STATUS" = "UPDATE_FAILED" ]; then
+                  echo "❌ Service failed, deleting to recreate..."
+                  aws apprunner delete-service \
+                    --service-arn "$SERVICE_ARN" \
+                    --region "${{ env.AWS_REGION }}"
+                  
+                  echo "Waiting for deletion..."
+                  for j in {1..20}; do
+                    DELETE_STATUS=$(aws apprunner describe-service \
+                      --service-arn "$SERVICE_ARN" \
+                      --region "${{ env.AWS_REGION }}" \
+                      --query 'Service.Status' \
+                      --output text 2>/dev/null || echo "DELETED")
+                    if [ "$DELETE_STATUS" = "DELETED" ] || [ -z "$DELETE_STATUS" ]; then
+                      echo "Service deleted"
+                      SERVICE_ARN=""
+                      break
+                    fi
+                    sleep 15
+                  done
+                  break
+                elif [ "$CURRENT_STATUS" != "OPERATION_IN_PROGRESS" ]; then
+                  echo "Operation completed with status: $CURRENT_STATUS"
                   break
                 fi
-                echo "[$i] Waiting for deletion... ($DELETE_STATUS)"
-                sleep 15
+                sleep 30
               done
             fi
           fi
