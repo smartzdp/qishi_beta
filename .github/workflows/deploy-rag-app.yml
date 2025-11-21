@@ -200,37 +200,50 @@ jobs:
               exit 1
             fi
             
+            # Build JSON configurations
+            cat > /tmp/source-config.json << EOF
+            {
+              "ImageRepository": {
+                "ImageIdentifier": "${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}",
+                "ImageRepositoryType": "ECR",
+                "ImageConfiguration": {
+                  "Port": "8080",
+                  "RuntimeEnvironmentSecrets": {
+                    "OPENAI_API_KEY": "${{ env.SECRET_ARN }}"
+                  }
+                }
+              },
+              "AuthenticationConfiguration": {
+                "AccessRoleArn": "${{ env.ACCESS_ROLE_ARN }}"
+              },
+              "AutoDeploymentsEnabled": false
+            }
+            EOF
+            
+            cat > /tmp/instance-config.json << EOF
+            {
+              "Cpu": "1024",
+              "Memory": "2048",
+              "InstanceRoleArn": "${{ env.INSTANCE_ROLE_ARN }}"
+            }
+            EOF
+            
+            cat > /tmp/health-check-config.json << EOF
+            {
+              "Protocol": "TCP",
+              "Interval": 10,
+              "Timeout": 5,
+              "HealthyThreshold": 1,
+              "UnhealthyThreshold": 5
+            }
+            EOF
+            
             aws apprunner create-service \
               --service-name bee-edu-rag-service \
               --region "${{ env.AWS_REGION }}" \
-              --source-configuration "{
-                \"ImageRepository\": {
-                  \"ImageIdentifier\": \"${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}\",
-                  \"ImageRepositoryType\": \"ECR\",
-                  \"ImageConfiguration\": {
-                    \"Port\": \"8080\",
-                    \"RuntimeEnvironmentSecrets\": {
-                      \"OPENAI_API_KEY\": \"${{ env.SECRET_ARN }}\"
-                    }
-                  }
-                },
-                \"AuthenticationConfiguration\": {
-                  \"AccessRoleArn\": \"${{ env.ACCESS_ROLE_ARN }}\"
-                },
-                \"AutoDeploymentsEnabled\": false
-              }" \
-              --instance-configuration "{
-                \"Cpu\": \"1024\",
-                \"Memory\": \"2048\",
-                \"InstanceRoleArn\": \"${{ env.INSTANCE_ROLE_ARN }}\"
-              }" \
-              --health-check-configuration "{
-                \"Protocol\": \"TCP\",
-                \"Interval\": 10,
-                \"Timeout\": 5,
-                \"HealthyThreshold\": 1,
-                \"UnhealthyThreshold\": 5
-              }" \
+              --source-configuration file:///tmp/source-config.json \
+              --instance-configuration file:///tmp/instance-config.json \
+              --health-check-configuration file:///tmp/health-check-config.json \
               --query 'Service.ServiceArn' \
               --output text > service_arn.txt
             
@@ -242,37 +255,65 @@ jobs:
             echo "✅ Created service: $SERVICE_ARN"
           else
             echo "Updating existing service: $SERVICE_ARN"
+            
+            # Validate required environment variables
+            if [ -z "${{ env.SECRET_ARN }}" ]; then
+              echo "❌ Error: SECRET_ARN is not set"
+              exit 1
+            fi
+            if [ -z "${{ env.ACCESS_ROLE_ARN }}" ]; then
+              echo "❌ Error: ACCESS_ROLE_ARN is not set"
+              exit 1
+            fi
+            if [ -z "${{ env.INSTANCE_ROLE_ARN }}" ]; then
+              echo "❌ Error: INSTANCE_ROLE_ARN is not set"
+              exit 1
+            fi
+            
+            # Build JSON configurations
+            cat > /tmp/source-config.json << EOF
+            {
+              "ImageRepository": {
+                "ImageIdentifier": "${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}",
+                "ImageRepositoryType": "ECR",
+                "ImageConfiguration": {
+                  "Port": "8080",
+                  "RuntimeEnvironmentSecrets": {
+                    "OPENAI_API_KEY": "${{ env.SECRET_ARN }}"
+                  }
+                }
+              },
+              "AuthenticationConfiguration": {
+                "AccessRoleArn": "${{ env.ACCESS_ROLE_ARN }}"
+              },
+              "AutoDeploymentsEnabled": false
+            }
+            EOF
+            
+            cat > /tmp/instance-config.json << EOF
+            {
+              "Cpu": "1024",
+              "Memory": "2048",
+              "InstanceRoleArn": "${{ env.INSTANCE_ROLE_ARN }}"
+            }
+            EOF
+            
+            cat > /tmp/health-check-config.json << EOF
+            {
+              "Protocol": "TCP",
+              "Interval": 10,
+              "Timeout": 5,
+              "HealthyThreshold": 1,
+              "UnhealthyThreshold": 5
+            }
+            EOF
+            
             aws apprunner update-service \
               --service-arn "$SERVICE_ARN" \
               --region "${{ env.AWS_REGION }}" \
-              --source-configuration '{
-                "ImageRepository": {
-                  "ImageIdentifier": "'${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}'",
-                  "ImageRepositoryType": "ECR",
-                  "ImageConfiguration": {
-                    "Port": "8080",
-                    "RuntimeEnvironmentSecrets": {
-                      "OPENAI_API_KEY": "'${{ env.SECRET_ARN }}'"
-                    }
-                  }
-                },
-                "AuthenticationConfiguration": {
-                  "AccessRoleArn": "'${{ env.ACCESS_ROLE_ARN }}'"
-                },
-                "AutoDeploymentsEnabled": false
-              }' \
-              --instance-configuration '{
-                "Cpu": "1024",
-                "Memory": "2048",
-                "InstanceRoleArn": "'${{ env.INSTANCE_ROLE_ARN }}'"
-              }' \
-              --health-check-configuration '{
-                "Protocol": "TCP",
-                "Interval": 10,
-                "Timeout": 5,
-                "HealthyThreshold": 1,
-                "UnhealthyThreshold": 5
-              }' \
+              --source-configuration file:///tmp/source-config.json \
+              --instance-configuration file:///tmp/instance-config.json \
+              --health-check-configuration file:///tmp/health-check-config.json
           fi
           
           # Wait for RUNNING state
