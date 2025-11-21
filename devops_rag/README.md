@@ -39,7 +39,7 @@ terraform apply -auto-approve
 
 ## 工作流概览（`.github/workflows/deploy-rag-app.yml`）
 
-- **触发条件**：推送到 `main` 分支且 `devops_rag/**` 文件夹有变化（不包括 README.md）
+- **触发条件**：推送到 `main` 分支且 `devops_rag/**` 文件夹有变化
 - **核心步骤**：
   1. `Checkout` 代码
   2. 通过 GitHub OIDC 假设 IAM 角色（`aws-actions/configure-aws-credentials@v4`）
