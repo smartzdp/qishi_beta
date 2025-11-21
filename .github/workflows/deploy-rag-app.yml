@@ -8,6 +8,8 @@ on:
     paths:
       - 'devops_rag/**'
       - '.github/workflows/deploy-rag-app.yml'
+    paths-ignore:
+      - 'devops_rag/README.md'
 
 # 环境变量：从 GitHub Secrets 读取
 env:
