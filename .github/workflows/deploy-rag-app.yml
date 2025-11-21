@@ -15,7 +15,6 @@ on:
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-  APP_RUNNER_ARN: ${{ secrets.APP_RUNNER_ARN }}
   AWS_IAM_ROLE: ${{ secrets.AWS_IAM_ROLE_TO_ASSUME }}
 
 # 权限：允许 workflow 从 OIDC 获取身份 token
@@ -79,14 +78,6 @@ jobs:
             echo "✅ Found existing service: $SERVICE_ARN"
             echo "SERVICE_ARN=$SERVICE_ARN" >> $GITHUB_ENV
             echo "SERVICE_EXISTS=true" >> $GITHUB_ENV
-            
-            # Validate ARN format if provided as secret
-            if [ ! -z "${{ env.APP_RUNNER_ARN }}" ]; then
-              ARN="${{ env.APP_RUNNER_ARN }}"
-              if ! echo "$ARN" | grep -Eq '^arn:aws:apprunner:.*:service\/[^\/]+\/[^\/]+'; then
-                echo "⚠️  Warning: APP_RUNNER_ARN secret format may be invalid, using discovered ARN instead"
-              fi
-            fi
           fi
 
       - name: Fetch App Runner role ARNs (if service exists)
