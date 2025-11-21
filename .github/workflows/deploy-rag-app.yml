@@ -129,6 +129,68 @@ jobs:
           cpu: 1
           memory: 2
           wait-for-service-stability-seconds: 600
+      
+      - name: Update service with runtime secrets
+        run: |
+          # Get current service ARN
+          SERVICE_ARN=$(aws apprunner list-services \
+            --region "${{ env.AWS_REGION }}" \
+            --query "ServiceSummaryList[?ServiceName=='bee-edu-rag-service'].ServiceArn" \
+            --output text)
+          
+          # Get secret ARN
+          SECRET_ARN=$(aws secretsmanager describe-secret \
+            --secret-id bee-edu-openai-key-secret \
+            --region "${{ env.AWS_REGION }}" \
+            --query 'ARN' \
+            --output text)
+          
+          # Get current service configuration
+          CURRENT_IMAGE=$(aws apprunner describe-service \
+            --service-arn "$SERVICE_ARN" \
+            --region "${{ env.AWS_REGION }}" \
+            --query 'Service.SourceConfiguration.ImageRepository.ImageIdentifier' \
+            --output text)
+          
+          CURRENT_ACCESS_ROLE=$(aws apprunner describe-service \
+            --service-arn "$SERVICE_ARN" \
+            --region "${{ env.AWS_REGION }}" \
+            --query 'Service.SourceConfiguration.AuthenticationConfiguration.AccessRoleArn' \
+            --output text)
+          
+          # Check if secrets are already configured
+          CURRENT_SECRETS=$(aws apprunner describe-service \
+            --service-arn "$SERVICE_ARN" \
+            --region "${{ env.AWS_REGION }}" \
+            --query 'Service.SourceConfiguration.ImageRepository.ImageConfiguration.RuntimeEnvironmentSecrets' \
+            --output json)
+          
+          # Update service with runtime secrets if not already configured
+          if [ "$CURRENT_SECRETS" = "null" ] || [ -z "$CURRENT_SECRETS" ] || [ "$CURRENT_SECRETS" = "{}" ]; then
+            echo "Updating service with runtime secrets..."
+            aws apprunner update-service \
+              --service-arn "$SERVICE_ARN" \
+              --region "${{ env.AWS_REGION }}" \
+              --source-configuration "{
+                \"ImageRepository\": {
+                  \"ImageIdentifier\": \"$CURRENT_IMAGE\",
+                  \"ImageRepositoryType\": \"ECR\",
+                  \"ImageConfiguration\": {
+                    \"Port\": \"8080\",
+                    \"RuntimeEnvironmentSecrets\": {
+                      \"OPENAI_API_KEY\": \"$SECRET_ARN\"
+                    }
+                  }
+                },
+                \"AuthenticationConfiguration\": {
+                  \"AccessRoleArn\": \"$CURRENT_ACCESS_ROLE\"
+                },
+                \"AutoDeploymentsEnabled\": false
+              }" > /dev/null
+            echo "✅ Service updated with runtime secrets"
+          else
+            echo "✅ Service already has runtime secrets configured"
+          fi
           
       - name: Deployment Complete
         run: echo "✅ Deployment to App Runner successful!"
