@@ -63,8 +63,7 @@ resource "aws_iam_policy" "github_actions_policy" {
           "apprunner:StartDeployment",
           "apprunner:DescribeService",
           "apprunner:UpdateService",
-          "apprunner:ListOperations",
-          "apprunner:DeleteService"
+          "apprunner:ListOperations"
          ],
         Resource = "*"
       }
@@ -94,15 +93,6 @@ resource "aws_iam_policy" "github_actions_policy" {
           aws_iam_role.apprunner_instance_role.arn,
           aws_iam_role.apprunner_service_role.arn
         ]
-      }
-      ,
-      {
-        Effect = "Allow",
-        Action = [
-          "secretsmanager:DescribeSecret",
-          "secretsmanager:GetSecretValue"
-        ],
-        Resource = aws_secretsmanager_secret.openai_key.arn
       }
     ]
   })
@@ -160,7 +150,7 @@ variable "manage_apprunner_via_terraform" {
 
 # 安全存储 API Key
 resource "aws_secretsmanager_secret" "openai_key" {
-  name = "rag-app-openai-key"
+  name = "bee-edu-openai-key-secret"
   recovery_window_in_days = 0
 }
 resource "aws_secretsmanager_secret_version" "openai_key_value" {
@@ -171,13 +161,13 @@ resource "aws_secretsmanager_secret_version" "openai_key_value" {
 
 # ECR 镜像仓库
 resource "aws_ecr_repository" "rag_app_ecr" {
-  name = "rag-app"
+  name = "bee-edu-rag-app"
   force_delete = true
 }
 
 # App Runner 服务角色：用于拉取 ECR 镜像
 resource "aws_iam_role" "apprunner_service_role" {
-  name = "rag-app-apprunner-role"
+  name = "bee-edu-apprunner-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -190,7 +180,7 @@ resource "aws_iam_role" "apprunner_service_role" {
 
 # App Runner 实例角色：用于在运行时读取 Secrets Manager
 resource "aws_iam_role" "apprunner_instance_role" {
-  name = "rag-app-instance-role"
+  name = "bee-edu-apprunner-instance-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -202,7 +192,7 @@ resource "aws_iam_role" "apprunner_instance_role" {
 }
 
 resource "aws_iam_role_policy" "apprunner_secrets" {
-  name = "rag-app-secrets-policy"
+  name = "apprunner-secrets-policy"
   role = aws_iam_role.apprunner_instance_role.name
   policy = jsonencode({
     Version = "2012-10-17"
@@ -217,7 +207,7 @@ resource "aws_iam_role_policy" "apprunner_secrets" {
 # App Runner 服务
 resource "aws_apprunner_service" "rag_app_service" {
   count = var.manage_apprunner_via_terraform ? 1 : 0
-  service_name = "rag-app-1"
+  service_name = "bee-edu-rag-service"
   
   source_configuration {
     authentication_configuration {
@@ -243,8 +233,8 @@ resource "aws_apprunner_service" "rag_app_service" {
   
   health_check_configuration {
     protocol            = "TCP"
-    interval            = 20
-    timeout             = 20
+    interval            = 10
+    timeout             = 5
     healthy_threshold   = 1
     unhealthy_threshold = 5
   }
@@ -252,7 +242,7 @@ resource "aws_apprunner_service" "rag_app_service" {
 
 # 为 App Runner 服务角色授予 ECR 读取权限
 resource "aws_iam_role_policy" "apprunner_ecr_access" {
-  name = "rag-app-ecr-access-policy"
+  name = "apprunner-ecr-access-policy"
   role = aws_iam_role.apprunner_service_role.name
   policy = jsonencode({
     Version = "2012-10-17",

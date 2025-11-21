@@ -62,7 +62,7 @@ jobs:
         run: |
           SERVICE_ARN=$(aws apprunner list-services \
             --region "${{ env.AWS_REGION }}" \
-            --query "ServiceSummaryList[?ServiceName=='rag-app-1'].ServiceArn" \
+            --query "ServiceSummaryList[?ServiceName=='bee-edu-rag-service'].ServiceArn" \
             --output text)
           
           if [ ! -z "$SERVICE_ARN" ] && [ "$SERVICE_ARN" != "None" ]; then
@@ -90,14 +90,14 @@ jobs:
 
       - name: Get Secrets Manager ARN
         run: |
-          SECRET_ARN=$(aws secretsmanager describe-secret --secret-id rag-app-openai-key --region ${{ env.AWS_REGION }} --query 'ARN' --output text)
+          SECRET_ARN=$(aws secretsmanager describe-secret --secret-id bee-edu-openai-key-secret --region ${{ env.AWS_REGION }} --query 'ARN' --output text)
           echo "SECRET_ARN=$SECRET_ARN" >> $GITHUB_ENV
 
       - name: Deploy to App Runner (create or update)
         run: |
           SERVICE_ARN=$(aws apprunner list-services \
             --region "${{ env.AWS_REGION }}" \
-            --query "ServiceSummaryList[?ServiceName=='rag-app-1'].ServiceArn" \
+            --query "ServiceSummaryList[?ServiceName=='bee-edu-rag-service'].ServiceArn" \
             --output text)
           
           # If service exists, check its status
@@ -178,7 +178,7 @@ jobs:
           if [ -z "$SERVICE_ARN" ] || [ "$SERVICE_ARN" == "None" ]; then
             echo "Creating new App Runner service..."
             aws apprunner create-service \
-              --service-name rag-app-1 \
+              --service-name bee-edu-rag-service \
               --region "${{ env.AWS_REGION }}" \
               --source-configuration '{
                 "ImageRepository": {
@@ -200,6 +200,13 @@ jobs:
                 "Cpu": "1024",
                 "Memory": "2048",
                 "InstanceRoleArn": "'${{ env.INSTANCE_ROLE_ARN }}'"
+              }' \
+              --health-check-configuration '{
+                "Protocol": "TCP",
+                "Interval": 10,
+                "Timeout": 5,
+                "HealthyThreshold": 1,
+                "UnhealthyThreshold": 5
               }' \
               --query 'Service.ServiceArn' \
               --output text > service_arn.txt
@@ -231,6 +238,13 @@ jobs:
                 "Cpu": "1024",
                 "Memory": "2048",
                 "InstanceRoleArn": "'${{ env.INSTANCE_ROLE_ARN }}'"
+              }' \
+              --health-check-configuration '{
+                "Protocol": "TCP",
+                "Interval": 10,
+                "Timeout": 5,
+                "HealthyThreshold": 1,
+                "UnhealthyThreshold": 5
               }' \
           fi
           

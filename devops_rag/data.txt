@@ -1,4 +1,4 @@
-AI VIBE CODING course teaches students how to build real-world AI products.
+BEE EDU's AI VIBE CODING course teaches students how to build real-world AI products.
 The course runs from December 27th to February 7th.
 Students will learn to build an MVP (Minimum Viable Product).
 This DevOps course teaches how to deploy AI applications to the cloud.
