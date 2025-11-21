@@ -93,6 +93,14 @@ resource "aws_iam_policy" "github_actions_policy" {
           aws_iam_role.apprunner_instance_role.arn,
           aws_iam_role.apprunner_service_role.arn
         ]
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:GetSecretValue"
+        ],
+        Resource = aws_secretsmanager_secret.openai_key.arn
       }
     ]
   })
