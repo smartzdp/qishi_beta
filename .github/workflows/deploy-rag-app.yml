@@ -91,14 +91,22 @@ jobs:
       - name: Get Secrets Manager ARN
         run: |
           SECRET_ARN=$(aws secretsmanager describe-secret --secret-id bee-edu-openai-key-secret --region ${{ env.AWS_REGION }} --query 'ARN' --output text)
+          if [ -z "$SECRET_ARN" ]; then
+            echo "❌ Error: Failed to get secret ARN"
+            exit 1
+          fi
           echo "SECRET_ARN=$SECRET_ARN" >> $GITHUB_ENV
+          echo "✅ Secret ARN: $SECRET_ARN"
 
       - name: Deploy to App Runner (create or update)
         run: |
+          set -e  # Exit on error
           SERVICE_ARN=$(aws apprunner list-services \
             --region "${{ env.AWS_REGION }}" \
             --query "ServiceSummaryList[?ServiceName=='bee-edu-rag-service'].ServiceArn" \
             --output text)
+          
+          echo "SERVICE_ARN: $SERVICE_ARN"
           
           # If service exists, check its status
           if [ ! -z "$SERVICE_ARN" ] && [ "$SERVICE_ARN" != "None" ]; then
@@ -177,42 +185,61 @@ jobs:
           
           if [ -z "$SERVICE_ARN" ] || [ "$SERVICE_ARN" == "None" ]; then
             echo "Creating new App Runner service..."
+            
+            # Validate required environment variables
+            if [ -z "${{ env.SECRET_ARN }}" ]; then
+              echo "❌ Error: SECRET_ARN is not set"
+              exit 1
+            fi
+            if [ -z "${{ env.ACCESS_ROLE_ARN }}" ]; then
+              echo "❌ Error: ACCESS_ROLE_ARN is not set"
+              exit 1
+            fi
+            if [ -z "${{ env.INSTANCE_ROLE_ARN }}" ]; then
+              echo "❌ Error: INSTANCE_ROLE_ARN is not set"
+              exit 1
+            fi
+            
             aws apprunner create-service \
               --service-name bee-edu-rag-service \
               --region "${{ env.AWS_REGION }}" \
-              --source-configuration '{
-                "ImageRepository": {
-                  "ImageIdentifier": "'${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}'",
-                  "ImageRepositoryType": "ECR",
-                  "ImageConfiguration": {
-                    "Port": "8080",
-                    "RuntimeEnvironmentSecrets": {
-                      "OPENAI_API_KEY": "'${{ env.SECRET_ARN }}'"
+              --source-configuration "{
+                \"ImageRepository\": {
+                  \"ImageIdentifier\": \"${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}\",
+                  \"ImageRepositoryType\": \"ECR\",
+                  \"ImageConfiguration\": {
+                    \"Port\": \"8080\",
+                    \"RuntimeEnvironmentSecrets\": {
+                      \"OPENAI_API_KEY\": \"${{ env.SECRET_ARN }}\"
                     }
                   }
                 },
-                "AuthenticationConfiguration": {
-                  "AccessRoleArn": "'${{ env.ACCESS_ROLE_ARN }}'"
+                \"AuthenticationConfiguration\": {
+                  \"AccessRoleArn\": \"${{ env.ACCESS_ROLE_ARN }}\"
                 },
-                "AutoDeploymentsEnabled": false
-              }' \
-              --instance-configuration '{
-                "Cpu": "1024",
-                "Memory": "2048",
-                "InstanceRoleArn": "'${{ env.INSTANCE_ROLE_ARN }}'"
-              }' \
-              --health-check-configuration '{
-                "Protocol": "TCP",
-                "Interval": 10,
-                "Timeout": 5,
-                "HealthyThreshold": 1,
-                "UnhealthyThreshold": 5
-              }' \
+                \"AutoDeploymentsEnabled\": false
+              }" \
+              --instance-configuration "{
+                \"Cpu\": \"1024\",
+                \"Memory\": \"2048\",
+                \"InstanceRoleArn\": \"${{ env.INSTANCE_ROLE_ARN }}\"
+              }" \
+              --health-check-configuration "{
+                \"Protocol\": \"TCP\",
+                \"Interval\": 10,
+                \"Timeout\": 5,
+                \"HealthyThreshold\": 1,
+                \"UnhealthyThreshold\": 5
+              }" \
               --query 'Service.ServiceArn' \
               --output text > service_arn.txt
             
             SERVICE_ARN=$(cat service_arn.txt)
-            echo "Created service: $SERVICE_ARN"
+            if [ -z "$SERVICE_ARN" ]; then
+              echo "❌ Error: Failed to create service"
+              exit 1
+            fi
+            echo "✅ Created service: $SERVICE_ARN"
           else
             echo "Updating existing service: $SERVICE_ARN"
             aws apprunner update-service \
