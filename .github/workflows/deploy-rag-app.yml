@@ -13,7 +13,8 @@ on:
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-  AWS_IAM_ROLE_TO_ASSUME: ${{ secrets.AWS_IAM_ROLE_TO_ASSUME }}
+  APP_RUNNER_ARN: ${{ secrets.APP_RUNNER_ARN }}
+  AWS_IAM_ROLE: ${{ secrets.AWS_IAM_ROLE_TO_ASSUME }}
 
 # 权限：允许 workflow 从 OIDC 获取身份 token
 permissions:
@@ -34,307 +35,109 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Configure AWS Credentials：使用 OIDC 角色登录
+      # 2. 配置 AWS 凭证 (使用 OIDC，无需 Access Key)
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ env.AWS_IAM_ROLE_TO_ASSUME }}
+          role-to-assume: ${{ env.AWS_IAM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # 3. Log in to ECR：登录 ECR
+      # 3. 登录到 ECR
       - name: Log in to ECR
         id: ecr-login
         uses: aws-actions/amazon-ecr-login@v2
 
-      # 4. Build and push Docker image：构建镜像并推送到 ECR（使用 GitHub SHA 作为 Tag）
+      # 4. 定义镜像标签 (使用 GitHub SHA)
+      - name: Define Image Tag
+        id: image-tag
+        run: echo "TAG=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+
+      # 5. 构建并推送 Docker 镜像
       - name: Build and push Docker image
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: ${{ env.TAG }}
         run: |
           docker build --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      # 5. 部署 (重点)：必须使用 awslabs/amazon-app-runner-deploy@main Action，并传入动态获取的角色 ARNs
-      - name: Fetch App Runner role ARNs (if service exists)
-        id: fetch-roles
-        continue-on-error: true
+      # 6. 查找或创建 App Runner 服务
+      - name: Find or get App Runner service ARN
+        id: find-service
         run: |
           SERVICE_ARN=$(aws apprunner list-services \
             --region "${{ env.AWS_REGION }}" \
             --query "ServiceSummaryList[?ServiceName=='bee-edu-rag-service'].ServiceArn" \
             --output text)
           
-          if [ ! -z "$SERVICE_ARN" ] && [ "$SERVICE_ARN" != "None" ]; then
-            ACCESS_ROLE_ARN=$(aws apprunner describe-service \
-              --region "${{ env.AWS_REGION }}" \
-              --service-arn "$SERVICE_ARN" \
-              --query 'Service.SourceConfiguration.AuthenticationConfiguration.AccessRoleArn' \
-              --output text)
-            
-            INSTANCE_ROLE_ARN=$(aws apprunner describe-service \
-              --region "${{ env.AWS_REGION }}" \
-              --service-arn "$SERVICE_ARN" \
-              --query 'Service.InstanceConfiguration.InstanceRoleArn' \
-              --output text)
-            
-            echo "ACCESS_ROLE_ARN=$ACCESS_ROLE_ARN" >> $GITHUB_ENV
-            echo "INSTANCE_ROLE_ARN=$INSTANCE_ROLE_ARN" >> $GITHUB_ENV
-            echo "SERVICE_EXISTS=true" >> $GITHUB_ENV
-          else
+          if [ -z "$SERVICE_ARN" ] || [ "$SERVICE_ARN" = "None" ]; then
+            echo "Service does not exist, will be created by deploy action"
             echo "SERVICE_EXISTS=false" >> $GITHUB_ENV
-            # Use role ARNs from secrets for first deployment
-            echo "ACCESS_ROLE_ARN=${{ secrets.ACCESS_ROLE_ARN }}" >> $GITHUB_ENV
-            echo "INSTANCE_ROLE_ARN=${{ secrets.INSTANCE_ROLE_ARN }}" >> $GITHUB_ENV
-          fi
-
-      - name: Get Secrets Manager ARN
-        run: |
-          SECRET_ARN=$(aws secretsmanager describe-secret --secret-id bee-edu-openai-key-secret --region ${{ env.AWS_REGION }} --query 'ARN' --output text)
-          if [ -z "$SECRET_ARN" ]; then
-            echo "❌ Error: Failed to get secret ARN"
-            exit 1
-          fi
-          echo "SECRET_ARN=$SECRET_ARN" >> $GITHUB_ENV
-          echo "✅ Secret ARN: $SECRET_ARN"
-
-      - name: Deploy to App Runner (create or update)
-        run: |
-          set -e  # Exit on error
-          SERVICE_ARN=$(aws apprunner list-services \
-            --region "${{ env.AWS_REGION }}" \
-            --query "ServiceSummaryList[?ServiceName=='bee-edu-rag-service'].ServiceArn" \
-            --output text)
-          
-          echo "SERVICE_ARN: $SERVICE_ARN"
-          
-          # If service exists, check its status
-          if [ ! -z "$SERVICE_ARN" ] && [ "$SERVICE_ARN" != "None" ]; then
-            STATUS=$(aws apprunner describe-service \
-              --service-arn "$SERVICE_ARN" \
-              --region "${{ env.AWS_REGION }}" \
-              --query 'Service.Status' \
-              --output text)
-            
-            echo "Found existing service with status: $STATUS"
-            
-            # If failed, delete it
-            if [ "$STATUS" = "CREATE_FAILED" ] || [ "$STATUS" = "UPDATE_FAILED" ]; then
-              echo "Service is in failed state, deleting..."
-              aws apprunner delete-service \
-                --service-arn "$SERVICE_ARN" \
-                --region "${{ env.AWS_REGION }}"
-              
-              echo "Waiting for deletion to complete..."
-              for i in {1..20}; do
-                DELETE_STATUS=$(aws apprunner describe-service \
-                  --service-arn "$SERVICE_ARN" \
-                  --region "${{ env.AWS_REGION }}" \
-                  --query 'Service.Status' \
-                  --output text 2>/dev/null || echo "DELETED")
-                if [ "$DELETE_STATUS" = "DELETED" ] || [ -z "$DELETE_STATUS" ]; then
-                  echo "Service deleted"
-                  SERVICE_ARN=""
-                  break
-                fi
-                echo "[$i] Waiting for deletion... ($DELETE_STATUS)"
-                sleep 15
-              done
-            # If in progress, wait for it to complete, then delete if failed
-            elif [ "$STATUS" = "OPERATION_IN_PROGRESS" ]; then
-              echo "Service is still deploying, waiting for operation to complete..."
-              for i in {1..40}; do
-                CURRENT_STATUS=$(aws apprunner describe-service \
-                  --service-arn "$SERVICE_ARN" \
-                  --region "${{ env.AWS_REGION }}" \
-                  --query 'Service.Status' \
-                  --output text)
-                echo "[$i] Status: $CURRENT_STATUS"
-                if [ "$CURRENT_STATUS" = "RUNNING" ]; then
-                  echo "✅ Service is RUNNING! Will update it."
-                  break
-                elif [ "$CURRENT_STATUS" = "CREATE_FAILED" ] || [ "$CURRENT_STATUS" = "UPDATE_FAILED" ]; then
-                  echo "❌ Service failed, deleting to recreate..."
-                  aws apprunner delete-service \
-                    --service-arn "$SERVICE_ARN" \
-                    --region "${{ env.AWS_REGION }}"
-                  
-                  echo "Waiting for deletion..."
-                  for j in {1..20}; do
-                    DELETE_STATUS=$(aws apprunner describe-service \
-                      --service-arn "$SERVICE_ARN" \
-                      --region "${{ env.AWS_REGION }}" \
-                      --query 'Service.Status' \
-                      --output text 2>/dev/null || echo "DELETED")
-                    if [ "$DELETE_STATUS" = "DELETED" ] || [ -z "$DELETE_STATUS" ]; then
-                      echo "Service deleted"
-                      SERVICE_ARN=""
-                      break
-                    fi
-                    sleep 15
-                  done
-                  break
-                elif [ "$CURRENT_STATUS" != "OPERATION_IN_PROGRESS" ]; then
-                  echo "Operation completed with status: $CURRENT_STATUS"
-                  break
-                fi
-                sleep 30
-              done
-            fi
-          fi
-          
-          if [ -z "$SERVICE_ARN" ] || [ "$SERVICE_ARN" == "None" ]; then
-            echo "Creating new App Runner service..."
-            
-            # Validate required environment variables
-            if [ -z "${{ env.SECRET_ARN }}" ]; then
-              echo "❌ Error: SECRET_ARN is not set"
-              exit 1
-            fi
-            if [ -z "${{ env.ACCESS_ROLE_ARN }}" ]; then
-              echo "❌ Error: ACCESS_ROLE_ARN is not set"
-              exit 1
-            fi
-            if [ -z "${{ env.INSTANCE_ROLE_ARN }}" ]; then
-              echo "❌ Error: INSTANCE_ROLE_ARN is not set"
-              exit 1
-            fi
-            
-            # Build JSON configurations
-            cat > /tmp/source-config.json << EOF
-            {
-              "ImageRepository": {
-                "ImageIdentifier": "${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}",
-                "ImageRepositoryType": "ECR",
-                "ImageConfiguration": {
-                  "Port": "8080",
-                  "RuntimeEnvironmentSecrets": {
-                    "OPENAI_API_KEY": "${{ env.SECRET_ARN }}"
-                  }
-                }
-              },
-              "AuthenticationConfiguration": {
-                "AccessRoleArn": "${{ env.ACCESS_ROLE_ARN }}"
-              },
-              "AutoDeploymentsEnabled": false
-            }
-            EOF
-            
-            cat > /tmp/instance-config.json << EOF
-            {
-              "Cpu": "1024",
-              "Memory": "2048",
-              "InstanceRoleArn": "${{ env.INSTANCE_ROLE_ARN }}"
-            }
-            EOF
-            
-            cat > /tmp/health-check-config.json << EOF
-            {
-              "Protocol": "TCP",
-              "Interval": 10,
-              "Timeout": 5,
-              "HealthyThreshold": 1,
-              "UnhealthyThreshold": 5
-            }
-            EOF
-            
-            aws apprunner create-service \
-              --service-name bee-edu-rag-service \
-              --region "${{ env.AWS_REGION }}" \
-              --source-configuration file:///tmp/source-config.json \
-              --instance-configuration file:///tmp/instance-config.json \
-              --health-check-configuration file:///tmp/health-check-config.json \
-              --query 'Service.ServiceArn' \
-              --output text > service_arn.txt
-            
-            SERVICE_ARN=$(cat service_arn.txt)
-            if [ -z "$SERVICE_ARN" ]; then
-              echo "❌ Error: Failed to create service"
-              exit 1
-            fi
-            echo "✅ Created service: $SERVICE_ARN"
           else
-            echo "Updating existing service: $SERVICE_ARN"
+            echo "✅ Found existing service: $SERVICE_ARN"
+            echo "SERVICE_ARN=$SERVICE_ARN" >> $GITHUB_ENV
+            echo "SERVICE_EXISTS=true" >> $GITHUB_ENV
             
-            # Validate required environment variables
-            if [ -z "${{ env.SECRET_ARN }}" ]; then
-              echo "❌ Error: SECRET_ARN is not set"
-              exit 1
+            # Validate ARN format if provided as secret
+            if [ ! -z "${{ env.APP_RUNNER_ARN }}" ]; then
+              ARN="${{ env.APP_RUNNER_ARN }}"
+              if ! echo "$ARN" | grep -Eq '^arn:aws:apprunner:.*:service\/[^\/]+\/[^\/]+'; then
+                echo "⚠️  Warning: APP_RUNNER_ARN secret format may be invalid, using discovered ARN instead"
+              fi
             fi
-            if [ -z "${{ env.ACCESS_ROLE_ARN }}" ]; then
-              echo "❌ Error: ACCESS_ROLE_ARN is not set"
-              exit 1
-            fi
-            if [ -z "${{ env.INSTANCE_ROLE_ARN }}" ]; then
-              echo "❌ Error: INSTANCE_ROLE_ARN is not set"
-              exit 1
-            fi
-            
-            # Build JSON configurations
-            cat > /tmp/source-config.json << EOF
-            {
-              "ImageRepository": {
-                "ImageIdentifier": "${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}",
-                "ImageRepositoryType": "ECR",
-                "ImageConfiguration": {
-                  "Port": "8080",
-                  "RuntimeEnvironmentSecrets": {
-                    "OPENAI_API_KEY": "${{ env.SECRET_ARN }}"
-                  }
-                }
-              },
-              "AuthenticationConfiguration": {
-                "AccessRoleArn": "${{ env.ACCESS_ROLE_ARN }}"
-              },
-              "AutoDeploymentsEnabled": false
-            }
-            EOF
-            
-            cat > /tmp/instance-config.json << EOF
-            {
-              "Cpu": "1024",
-              "Memory": "2048",
-              "InstanceRoleArn": "${{ env.INSTANCE_ROLE_ARN }}"
-            }
-            EOF
-            
-            cat > /tmp/health-check-config.json << EOF
-            {
-              "Protocol": "TCP",
-              "Interval": 10,
-              "Timeout": 5,
-              "HealthyThreshold": 1,
-              "UnhealthyThreshold": 5
-            }
-            EOF
-            
-            aws apprunner update-service \
-              --service-arn "$SERVICE_ARN" \
-              --region "${{ env.AWS_REGION }}" \
-              --source-configuration file:///tmp/source-config.json \
-              --instance-configuration file:///tmp/instance-config.json \
-              --health-check-configuration file:///tmp/health-check-config.json
           fi
-          
-          # Wait for RUNNING state
-          echo "Waiting for service to reach RUNNING state..."
-          for i in {1..40}; do
-            STATUS=$(aws apprunner describe-service \
-              --service-arn "$SERVICE_ARN" \
-              --region "${{ env.AWS_REGION }}" \
-              --query 'Service.Status' \
-              --output text)
-            echo "[$i] Status: $STATUS"
-            if [ "$STATUS" = "RUNNING" ]; then
-              echo "✅ Service is RUNNING!"
-              break
-            elif [ "$STATUS" = "CREATE_FAILED" ] || [ "$STATUS" = "UPDATE_FAILED" ]; then
-              echo "❌ Service failed"
-              exit 1
-            fi
-            sleep 30
-          done
 
+      - name: Fetch App Runner role ARNs (if service exists)
+        if: env.SERVICE_EXISTS == 'true'
+        run: |
+          ACCESS_ROLE_ARN=$(aws apprunner describe-service \
+            --region "${{ env.AWS_REGION }}" \
+            --service-arn "${{ env.SERVICE_ARN }}" \
+            --query 'Service.SourceConfiguration.AuthenticationConfiguration.AccessRoleArn' \
+            --output text)
+          INSTANCE_ROLE_ARN=$(aws apprunner describe-service \
+            --region "${{ env.AWS_REGION }}" \
+            --service-arn "${{ env.SERVICE_ARN }}" \
+            --query 'Service.InstanceConfiguration.InstanceRoleArn' \
+            --output text)
+          echo "APP_RUNNER_ACCESS_ROLE_ARN=$ACCESS_ROLE_ARN" >> $GITHUB_ENV
+          echo "APP_RUNNER_INSTANCE_ROLE_ARN=$INSTANCE_ROLE_ARN" >> $GITHUB_ENV
+      
+      - name: Get role ARNs and secret ARN from secrets (if service doesn't exist)
+        if: env.SERVICE_EXISTS == 'false'
+        run: |
+          echo "APP_RUNNER_ACCESS_ROLE_ARN=${{ secrets.ACCESS_ROLE_ARN }}" >> $GITHUB_ENV
+          echo "APP_RUNNER_INSTANCE_ROLE_ARN=${{ secrets.INSTANCE_ROLE_ARN }}" >> $GITHUB_ENV
+          # Get secret ARN for OpenAI API key
+          SECRET_ARN=$(aws secretsmanager describe-secret \
+            --secret-id bee-edu-openai-key-secret \
+            --region "${{ env.AWS_REGION }}" \
+            --query 'ARN' \
+            --output text)
+          echo "OPENAI_SECRET_ARN=$SECRET_ARN" >> $GITHUB_ENV
+
+      - name: Get secret ARN (if service exists, for update)
+        if: env.SERVICE_EXISTS == 'true'
+        run: |
+          SECRET_ARN=$(aws secretsmanager describe-secret \
+            --secret-id bee-edu-openai-key-secret \
+            --region "${{ env.AWS_REGION }}" \
+            --query 'ARN' \
+            --output text)
+          echo "OPENAI_SECRET_ARN=$SECRET_ARN" >> $GITHUB_ENV
+
+      - name: Deploy to App Runner
+        uses: awslabs/amazon-app-runner-deploy@main
+        with:
+          service: bee-edu-rag-service
+          image: ${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.TAG }}
+          region: ${{ env.AWS_REGION }}
+          access-role-arn: ${{ env.APP_RUNNER_ACCESS_ROLE_ARN }}
+          instance-role-arn: ${{ env.APP_RUNNER_INSTANCE_ROLE_ARN }}
+          port: 8080
+          cpu: 1
+          memory: 2
+          wait-for-service-stability-seconds: 600
+          
       - name: Deployment Complete
         run: echo "✅ Deployment to App Runner successful!"
-
